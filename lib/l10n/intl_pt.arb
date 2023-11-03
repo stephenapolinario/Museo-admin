@@ -1,0 +1,34 @@
+{   "@_LOGIN_SCREEN": {},
+	"login_screen_title": "Login",
+	"login_title_content": "Painel administrativo",
+    "login_email_hint": "Email",
+    "login_password_hint": "Senha",
+	"login_your_email_example": "admin@email.com", 
+	"login_email_not_valid": "Seu email não é válido",
+	"login_fill_password": "Por favor, forneça sua senha",
+	"login_enter": "Entrar",
+	"login_success_title": "Perfeito",
+	"login_success_subtitle": "Admin logado com sucesso! \nRedirecionando...",
+	"login_error_title": "Erro!",
+	"login_error_subtitle": "Aconteceu algum problema ao entrar em sua conta\nVocê tem certeza de que seu email e senha estão certos?",
+	
+	"@_HOME": {},
+	"home_title": "Painel administrativo",
+	"home_logout_title": "Saindo",
+	"home_logout_subtitle": "Redirecionando...",
+
+	"@_ADMINISTRATORS_LIST_VIEW": {},
+	"adminn_list_error_retreiving_admins": "Ooops, ocorreu um erro.\nTente sair e entrar novamente\nSe o erro persistir, entre em contato com os administradores.",
+	"admin_list_title": "Administradores",
+	"admin_list_tile_title": "Administrador",
+
+	"pop_menu_button_update": "Atualizar",
+	"pop_menu_button_delete": "Deletar",
+	"sure_want_delete_title": "Você tem certeza que quer deletar esse administrador?",
+	"sure_want_delete_content": "Após o administrador ser deletado, não será possível recuperar o mesmo",
+	"sure_want_delete_option_yes": "Sim, quero deletar",
+	"sure_want_delete_option_false": "Não",
+
+	"@_JUST_TO_MAKE_THE_LASTONE_WITHOUT_COMMA": {},
+    "under_construction": "Under construction..."
+}
