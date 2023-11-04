@@ -1,19 +1,23 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
-import 'package:museo_admin_application/constants/routes.dart';
 import 'package:museo_admin_application/extensions/buildcontext/loc.dart';
 import 'package:museo_admin_application/helpers/loading_complete.dart';
 import 'package:museo_admin_application/services/admin_service.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class AdminCreateScreen extends StatefulWidget {
+  final Function onUpdate;
+
+  const AdminCreateScreen({
+    super.key,
+    required this.onUpdate,
+  });
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<AdminCreateScreen> createState() => _AdminCreateScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  final formLoginKey = GlobalKey<FormState>();
+class _AdminCreateScreenState extends State<AdminCreateScreen> {
+  final adminCreateKey = GlobalKey<FormState>();
   late String? email, password;
 
   @override
@@ -22,45 +26,27 @@ class _LoginScreenState extends State<LoginScreen> {
       backgroundColor: Theme.of(context).colorScheme.primary,
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(context.loc.login_screen_title),
+        title: Text(context.loc.admin_create_screen_title),
       ),
-      body: Column(
-        children: [
-          loginTitle(context),
-          SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  loginFields(context),
-                  enterButton(context),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget loginTitle(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 40),
-      child: Text(
-        context.loc.login_title_content,
-        textAlign: TextAlign.center,
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 28,
+      body: Padding(
+        padding: const EdgeInsets.symmetric(
+          vertical: 20,
+          horizontal: 16,
+        ),
+        child: Column(
+          children: [
+            fields(context),
+            enterButton(context),
+          ],
         ),
       ),
     );
   }
 
-  Widget loginFields(BuildContext context) {
+  Widget fields(BuildContext context) {
     return Form(
-      key: formLoginKey,
-      // autovalidateMode: AutovalidateMode.always,
+      key: adminCreateKey,
+      autovalidateMode: AutovalidateMode.always,
       child: ListView(
         shrinkWrap: true,
         padding: const EdgeInsets.all(16),
@@ -80,7 +66,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Align(
           alignment: Alignment.topLeft,
           child: Text(
-            context.loc.login_email_hint,
+            context.loc.admin_update_screen_email_hint,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 16,
@@ -90,7 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
         TextFormField(
           keyboardType: TextInputType.emailAddress,
           decoration: InputDecoration(
-            hintText: context.loc.login_your_email_example,
+            hintText: context.loc.create_admin_email_hint,
             contentPadding: const EdgeInsets.only(left: 10),
             fillColor: Colors.white,
             filled: true,
@@ -114,7 +100,7 @@ class _LoginScreenState extends State<LoginScreen> {
           validator: (value) {
             if (value != null) {
               if (!EmailValidator.validate(value)) {
-                return context.loc.login_email_not_valid;
+                return context.loc.admin_update_screen_email_not_valid;
               }
             }
             return null;
@@ -134,7 +120,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Align(
           alignment: Alignment.topLeft,
           child: Text(
-            context.loc.login_password_hint,
+            context.loc.admin_update_screen_password_hint,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 16,
@@ -144,7 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
         TextFormField(
           obscureText: true,
           decoration: const InputDecoration(
-            hintText: '******',
+            hintText: '*****************',
             contentPadding: EdgeInsets.only(left: 10),
             fillColor: Colors.white,
             filled: true,
@@ -167,7 +153,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
           validator: (value) {
             if (value == null || value == '') {
-              return context.loc.login_fill_password;
+              return context.loc.create_admin_no_password;
             }
             return null;
           },
@@ -186,34 +172,39 @@ class _LoginScreenState extends State<LoginScreen> {
         const SizedBox(height: 20),
         TextButton(
           child: Text(
-            context.loc.login_enter,
+            context.loc.admin_create_screen_create_button,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 18,
             ),
           ),
           onPressed: () async {
+            final navigator = Navigator.of(context);
             FocusManager.instance.primaryFocus?.unfocus();
-            final isValid = formLoginKey.currentState!.validate();
+            final isValid = adminCreateKey.currentState!.validate();
+
             if (isValid) {
-              final navigator = Navigator.of(context);
-              formLoginKey.currentState!.save();
-              final adminLogin = await AdminService().login(
-                context: context,
-                email: email!,
-                password: password!,
+              adminCreateKey.currentState!.save();
+              final createAdmin = await AdminService().create(
+                context,
+                password!,
+                email!,
               );
+              widget.onUpdate();
+
               if (context.mounted) {
                 await loadingMessageTime(
-                  title: adminLogin == EnumAdminStatus.success
-                      ? context.loc.login_success_title
-                      : context.loc.login_error_title,
-                  subtitle: adminLogin == EnumAdminStatus.success
-                      ? context.loc.login_success_subtitle
-                      : context.loc.login_error_subtitle,
+                  title: createAdmin == EnumAdminStatus.success
+                      ? context.loc.admin_created_successful_title
+                      : context.loc.admin_create_error_title,
+                  subtitle: createAdmin == EnumAdminStatus.success
+                      ? context.loc.admin_created_successful_subtitle
+                      : createAdmin == EnumAdminStatus.duplicatedEmail
+                          ? context.loc.admin_create_duplicate_email_content
+                          : context.loc.admin_create_error_subtitle,
                   context: context,
                 );
-                navigator.popAndPushNamed(home);
+                createAdmin == EnumAdminStatus.success ? navigator.pop() : null;
               }
             }
           },

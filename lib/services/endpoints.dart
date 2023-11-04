@@ -4,4 +4,8 @@ class Api {
   Uri admin({required String endpoint}) {
     return Uri.parse('${dotenv.get('URL_API')}/admin/$endpoint');
   }
+
+  Uri beacon({required String endpoint}) {
+    return Uri.parse('${dotenv.get('URL_API')}/beacon/$endpoint');
+  }
 }

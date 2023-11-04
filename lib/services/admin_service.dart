@@ -7,10 +7,10 @@ import 'package:museo_admin_application/providers/admin.dart';
 import 'package:museo_admin_application/services/endpoints.dart';
 import 'package:provider/provider.dart';
 
-enum EnumStatus { error, duplicatedEmail, success }
+enum EnumAdminStatus { error, duplicatedEmail, success }
 
 class AdminService {
-  Future<EnumStatus> login({
+  Future<EnumAdminStatus> login({
     required BuildContext context,
     required String email,
     required String password,
@@ -27,7 +27,7 @@ class AdminService {
     );
 
     if (response.statusCode != 200) {
-      return EnumStatus.error;
+      return EnumAdminStatus.error;
     }
 
     final admin = LoggedAdmin.fromJson(jsonDecode(response.body));
@@ -37,10 +37,10 @@ class AdminService {
       loginAuthCode: admin.authCode,
     );
 
-    return EnumStatus.success;
+    return EnumAdminStatus.success;
   }
 
-  Future<List<ReadAdmin>> getAllAdmin(BuildContext context) async {
+  Future<List<ReadAdmin>> readAll(BuildContext context) async {
     final response = await http.get(
       Api().admin(endpoint: '/'),
       headers: adminJwt(context),
@@ -59,20 +59,20 @@ class AdminService {
     return adminsList;
   }
 
-  Future<EnumStatus> deleteAdmin(BuildContext context, String adminID) async {
+  Future<EnumAdminStatus> delete(BuildContext context, ReadAdmin admin) async {
     final response = await http.delete(
-      Api().admin(endpoint: adminID),
+      Api().admin(endpoint: admin.id),
       headers: adminJwt(context),
     );
 
     if (response.statusCode != 200) {
-      return EnumStatus.error;
+      return EnumAdminStatus.error;
     }
 
-    return EnumStatus.success;
+    return EnumAdminStatus.success;
   }
 
-  Future<EnumStatus> update(
+  Future<EnumAdminStatus> update(
     BuildContext context,
     ReadAdmin admin,
     String password,
@@ -93,13 +93,13 @@ class AdminService {
     );
 
     if (response.statusCode != 200) {
-      return EnumStatus.error;
+      return EnumAdminStatus.error;
     }
 
-    return EnumStatus.success;
+    return EnumAdminStatus.success;
   }
 
-  Future<EnumStatus> create(
+  Future<EnumAdminStatus> create(
       BuildContext context, String email, String password) async {
     final response = await http.post(
       Api().admin(endpoint: ''),
@@ -114,12 +114,12 @@ class AdminService {
 
     if (response.statusCode != 201) {
       if (jsonBody['error'] == 'Failed! Email is already in use') {
-        return EnumStatus.duplicatedEmail;
+        return EnumAdminStatus.duplicatedEmail;
       }
-      return EnumStatus.error;
+      return EnumAdminStatus.error;
     }
 
-    return EnumStatus.success;
+    return EnumAdminStatus.success;
   }
 }
 

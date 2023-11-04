@@ -1,26 +1,25 @@
 import 'package:email_validator/email_validator.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:museo_admin_application/extensions/buildcontext/loc.dart';
 import 'package:museo_admin_application/helpers/loading_complete.dart';
 import 'package:museo_admin_application/models/admin.dart';
 import 'package:museo_admin_application/services/admin_service.dart';
 
-class AdminUpdateView extends StatefulWidget {
+class AdminUpdateScreen extends StatefulWidget {
   final ReadAdmin admin;
   final Function onUpdate;
 
-  const AdminUpdateView({
+  const AdminUpdateScreen({
     super.key,
     required this.admin,
     required this.onUpdate,
   });
 
   @override
-  State<AdminUpdateView> createState() => _AdminUpdateViewState();
+  State<AdminUpdateScreen> createState() => _AdminUpdateScreenState();
 }
 
-class _AdminUpdateViewState extends State<AdminUpdateView> {
+class _AdminUpdateScreenState extends State<AdminUpdateScreen> {
   final adminUpdateKey = GlobalKey<FormState>();
 
   late String? email, password;
@@ -31,7 +30,7 @@ class _AdminUpdateViewState extends State<AdminUpdateView> {
       backgroundColor: Theme.of(context).colorScheme.primary,
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(context.loc.admin_update_view_title),
+        title: Text(context.loc.admin_update_screen_title),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(
@@ -71,7 +70,7 @@ class _AdminUpdateViewState extends State<AdminUpdateView> {
         Align(
           alignment: Alignment.topLeft,
           child: Text(
-            context.loc.admin_update_view_email_hint,
+            context.loc.admin_update_screen_email_hint,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 16,
@@ -105,7 +104,7 @@ class _AdminUpdateViewState extends State<AdminUpdateView> {
           validator: (value) {
             if (value != null) {
               if (!EmailValidator.validate(value)) {
-                return context.loc.admin_update_view_email_not_valid;
+                return context.loc.admin_update_screen_email_not_valid;
               }
             }
             return null;
@@ -125,7 +124,7 @@ class _AdminUpdateViewState extends State<AdminUpdateView> {
         Align(
           alignment: Alignment.topLeft,
           child: Text(
-            context.loc.admin_update_view_password_hint,
+            context.loc.admin_update_screen_password_hint,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 16,
@@ -174,7 +173,7 @@ class _AdminUpdateViewState extends State<AdminUpdateView> {
         const SizedBox(height: 20),
         TextButton(
           child: Text(
-            context.loc.admin_update_view_update_button,
+            context.loc.admin_update_screen_update_button,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 18,

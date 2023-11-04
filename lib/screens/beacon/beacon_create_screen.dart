@@ -1,20 +1,25 @@
-import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
-import 'package:museo_admin_application/constants/routes.dart';
 import 'package:museo_admin_application/extensions/buildcontext/loc.dart';
 import 'package:museo_admin_application/helpers/loading_complete.dart';
-import 'package:museo_admin_application/services/admin_service.dart';
+import 'package:museo_admin_application/services/beacon_service.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+// TODO: Create a way to detect the nearest beacon to add to the uuuid value;
+
+class BeaconCreateScreen extends StatefulWidget {
+  final Function onUpdate;
+
+  const BeaconCreateScreen({
+    super.key,
+    required this.onUpdate,
+  });
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<BeaconCreateScreen> createState() => _BeaconCreateScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  final formLoginKey = GlobalKey<FormState>();
-  late String? email, password;
+class _BeaconCreateScreenState extends State<BeaconCreateScreen> {
+  final beaconCreateKey = GlobalKey<FormState>();
+  late String? name, uuid;
 
   @override
   Widget build(BuildContext context) {
@@ -22,65 +27,47 @@ class _LoginScreenState extends State<LoginScreen> {
       backgroundColor: Theme.of(context).colorScheme.primary,
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(context.loc.login_screen_title),
+        title: Text(context.loc.beacon_create_screen_title),
       ),
-      body: Column(
-        children: [
-          loginTitle(context),
-          SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  loginFields(context),
-                  enterButton(context),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget loginTitle(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 40),
-      child: Text(
-        context.loc.login_title_content,
-        textAlign: TextAlign.center,
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 28,
+      body: Padding(
+        padding: const EdgeInsets.symmetric(
+          vertical: 20,
+          horizontal: 16,
+        ),
+        child: Column(
+          children: [
+            fields(context),
+            enterButton(context),
+          ],
         ),
       ),
     );
   }
 
-  Widget loginFields(BuildContext context) {
+  Widget fields(BuildContext context) {
     return Form(
-      key: formLoginKey,
-      // autovalidateMode: AutovalidateMode.always,
+      key: beaconCreateKey,
+      autovalidateMode: AutovalidateMode.always,
       child: ListView(
         shrinkWrap: true,
         padding: const EdgeInsets.all(16),
         children: [
-          emailInput(context),
+          nameInput(context),
           const SizedBox(height: 15),
-          passwordInput(context),
+          uuidInput(context),
         ],
       ),
     );
   }
 
-  Widget emailInput(BuildContext context) {
+  Widget nameInput(BuildContext context) {
     return Column(
       children: [
         // Input Name
         Align(
           alignment: Alignment.topLeft,
           child: Text(
-            context.loc.login_email_hint,
+            context.loc.beacon_screen_input_name,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 16,
@@ -88,9 +75,8 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
         TextFormField(
-          keyboardType: TextInputType.emailAddress,
           decoration: InputDecoration(
-            hintText: context.loc.login_your_email_example,
+            hintText: context.loc.create_beacon_name_hint,
             contentPadding: const EdgeInsets.only(left: 10),
             fillColor: Colors.white,
             filled: true,
@@ -112,29 +98,27 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
           validator: (value) {
-            if (value != null) {
-              if (!EmailValidator.validate(value)) {
-                return context.loc.login_email_not_valid;
-              }
+            if (value == null || value == '') {
+              return context.loc.create_beacon_screen_name_not_valid;
             }
             return null;
           },
           onSaved: (newValue) => setState(() {
-            email = newValue;
+            name = newValue;
           }),
         ),
       ],
     );
   }
 
-  Widget passwordInput(BuildContext context) {
+  Widget uuidInput(BuildContext context) {
     return Column(
       children: [
         // Input Name
         Align(
           alignment: Alignment.topLeft,
           child: Text(
-            context.loc.login_password_hint,
+            context.loc.beacon_screen_input_uuid,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 16,
@@ -142,23 +126,22 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
         TextFormField(
-          obscureText: true,
-          decoration: const InputDecoration(
-            hintText: '******',
-            contentPadding: EdgeInsets.only(left: 10),
+          decoration: InputDecoration(
+            hintText: context.loc.beacon_screen_uuid_hint,
+            contentPadding: const EdgeInsets.only(left: 10),
             fillColor: Colors.white,
             filled: true,
-            border: OutlineInputBorder(),
-            errorStyle: TextStyle(
+            border: const OutlineInputBorder(),
+            errorStyle: const TextStyle(
               color: Colors.red,
             ),
-            errorBorder: OutlineInputBorder(
+            errorBorder: const OutlineInputBorder(
               borderSide: BorderSide(
                 color: Colors.red,
                 // width: 2,
               ),
             ),
-            focusedErrorBorder: OutlineInputBorder(
+            focusedErrorBorder: const OutlineInputBorder(
               borderSide: BorderSide(
                 color: Colors.red,
                 width: 2,
@@ -166,13 +149,18 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
           validator: (value) {
-            if (value == null || value == '') {
-              return context.loc.login_fill_password;
+            RegExp regExp =
+                RegExp(r'^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$');
+
+            if (value != null) {
+              if (!regExp.hasMatch(value)) {
+                return context.loc.create_beacon_uuid_not_in_pattern;
+              }
             }
             return null;
           },
           onSaved: (newValue) => setState(() {
-            password = newValue;
+            uuid = newValue;
           }),
         ),
       ],
@@ -186,34 +174,41 @@ class _LoginScreenState extends State<LoginScreen> {
         const SizedBox(height: 20),
         TextButton(
           child: Text(
-            context.loc.login_enter,
+            context.loc.beacon_create_screen_create_button,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 18,
             ),
           ),
           onPressed: () async {
+            final navigator = Navigator.of(context);
             FocusManager.instance.primaryFocus?.unfocus();
-            final isValid = formLoginKey.currentState!.validate();
+            final isValid = beaconCreateKey.currentState!.validate();
+
             if (isValid) {
-              final navigator = Navigator.of(context);
-              formLoginKey.currentState!.save();
-              final adminLogin = await AdminService().login(
-                context: context,
-                email: email!,
-                password: password!,
+              beaconCreateKey.currentState!.save();
+              final createBeacon = await BeaconService().create(
+                context,
+                name!,
+                uuid!,
               );
+              widget.onUpdate();
+
               if (context.mounted) {
                 await loadingMessageTime(
-                  title: adminLogin == EnumAdminStatus.success
-                      ? context.loc.login_success_title
-                      : context.loc.login_error_title,
-                  subtitle: adminLogin == EnumAdminStatus.success
-                      ? context.loc.login_success_subtitle
-                      : context.loc.login_error_subtitle,
+                  title: createBeacon == EnumBeaconStatus.success
+                      ? context.loc.beacon_created_successful_title
+                      : context.loc.beacon_create_error_title,
+                  subtitle: createBeacon == EnumBeaconStatus.success
+                      ? context.loc.beacon_created_successful_subtitle
+                      : createBeacon == EnumBeaconStatus.duplicatedUUID
+                          ? context.loc.beacon_already_exists
+                          : context.loc.beacon_create_error_subtitle,
                   context: context,
                 );
-                navigator.popAndPushNamed(home);
+                createBeacon == EnumBeaconStatus.success
+                    ? navigator.pop()
+                    : null;
               }
             }
           },

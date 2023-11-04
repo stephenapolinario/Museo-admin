@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:museo_admin_application/constants/routes.dart';
-import 'package:museo_admin_application/screens/admin/admin_list_view.dart';
+import 'package:museo_admin_application/screens/admin/admin_list_screen.dart';
+import 'package:museo_admin_application/screens/beacon/beacon_list_screen.dart';
 import 'package:museo_admin_application/screens/home.dart';
 import 'package:museo_admin_application/screens/login.dart';
 import 'package:museo_admin_application/providers/admin.dart';
@@ -38,7 +39,8 @@ class MyApp extends StatelessWidget {
       routes: {
         login: (context) => const LoginScreen(),
         home: (context) => const HomeScreen(),
-        admin: (context) => const AdminListView(),
+        admin: (context) => const AdminListScreen(),
+        beacon: (context) => const BeaconListScreen(),
       },
     );
   }

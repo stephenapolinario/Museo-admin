@@ -1,42 +1,43 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:museo_admin_application/extensions/buildcontext/loc.dart';
-import 'package:museo_admin_application/models/admin.dart';
-import 'package:museo_admin_application/screens/admin/admin_create.dart';
-import 'package:museo_admin_application/screens/admin/admin_update_view.dart';
-import 'package:museo_admin_application/services/admin_service.dart';
+import 'package:museo_admin_application/models/beacon.dart';
+import 'package:museo_admin_application/screens/beacon/beacon_create_screen.dart';
+import 'package:museo_admin_application/screens/beacon/beacon_update_screen.dart';
+import 'package:museo_admin_application/services/beacon_service.dart';
 import 'package:museo_admin_application/utilities/generic_dialog.dart';
 
-class AdminListView extends StatefulWidget {
-  const AdminListView({super.key});
+// TODO: Create a filter option. Filtering by Tour
+
+class BeaconListScreen extends StatefulWidget {
+  const BeaconListScreen({super.key});
 
   @override
-  State<AdminListView> createState() => _AdminListViewState();
+  State<BeaconListScreen> createState() => BeaconListScreenState();
 }
 
-class _AdminListViewState extends State<AdminListView> {
-  late StreamController<List<ReadAdmin>> _adminStreamController;
-  Stream<List<ReadAdmin>> get onListAdminChanged =>
-      _adminStreamController.stream;
+class BeaconListScreenState extends State<BeaconListScreen> {
+  late StreamController<List<Beacon>> _beaconStreamController;
+  Stream<List<Beacon>> get onListbeaconChanged =>
+      _beaconStreamController.stream;
 
   @override
   void initState() {
     super.initState();
-    _adminStreamController = StreamController<List<ReadAdmin>>.broadcast();
+    _beaconStreamController = StreamController<List<Beacon>>.broadcast();
     fetchData();
   }
 
   @override
   void dispose() {
-    _adminStreamController.close();
+    _beaconStreamController.close();
     super.dispose();
   }
 
   void fetchData() async {
-    List<ReadAdmin> admins = await AdminService().getAllAdmin(context);
-    _adminStreamController.sink.add(admins);
+    List<Beacon> beacons = await BeaconService().readAll(context);
+    _beaconStreamController.sink.add(beacons);
   }
 
   @override
@@ -45,20 +46,20 @@ class _AdminListViewState extends State<AdminListView> {
       backgroundColor: Theme.of(context).colorScheme.primary,
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(context.loc.admin_list_title),
+        title: Text(context.loc.beacon_list_screen_title),
         actions: [
           IconButton(
             icon: const Icon(
-              CupertinoIcons.person_add,
+              Icons.add,
               color: Colors.black,
               size: 35,
             ),
             onPressed: () => {
               Navigator.of(context).push(
                 MaterialPageRoute<void>(
-                  builder: (BuildContext context) => AdminCreateView(
+                  builder: (BuildContext context) => BeaconCreateScreen(
                     onUpdate: () {
-                      fetchData(); // Call the method to update the stream when the admin is updated.
+                      fetchData(); // Call the method to update the stream when the beacon is updated.
                     },
                   ),
                 ),
@@ -72,12 +73,12 @@ class _AdminListViewState extends State<AdminListView> {
           vertical: 20,
           horizontal: 16,
         ),
-        child: StreamBuilder<List<ReadAdmin>?>(
-          stream: onListAdminChanged,
+        child: StreamBuilder<List<Beacon>?>(
+          stream: onListbeaconChanged,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              List<ReadAdmin> adminList = snapshot.data!;
-              return adminsList(adminList);
+              List<Beacon> beaconList = snapshot.data!;
+              return beaconsList(beaconList);
             }
 
             return const Center(
@@ -91,34 +92,33 @@ class _AdminListViewState extends State<AdminListView> {
     );
   }
 
-  Widget adminsList(List<ReadAdmin> adminList) {
+  Widget beaconsList(List<Beacon> beaconList) {
     return ListView.builder(
-      itemCount: adminList.length,
+      itemCount: beaconList.length,
       itemBuilder: (context, index) {
-        final currentAdmin = adminList[index];
+        final currentBeacon = beaconList[index];
         return Padding(
           padding: const EdgeInsets.only(bottom: 8),
           child: ListTile(
             iconColor: Colors.black,
-            key: ValueKey(currentAdmin.id),
+            key: ValueKey(currentBeacon.id),
             shape: RoundedRectangleBorder(
               side: const BorderSide(color: Colors.black, width: 1),
               borderRadius: BorderRadius.circular(5),
             ),
             tileColor: Colors.cyan.shade800,
             leading: const Icon(
-              CupertinoIcons.person_solid,
+              Icons.bluetooth,
               color: Colors.black,
             ),
             title: Text(
-              //In the future, this can be the user of the administrador (Right now admin only have email and password)
-              context.loc.admin_list_tile_title,
+              context.loc.beacon_list_tile_title,
               style: const TextStyle(
                 color: Colors.black,
               ),
             ),
             subtitle: Text(
-              currentAdmin.email,
+              currentBeacon.name,
               style: const TextStyle(
                 color: Colors.white,
               ),
@@ -129,10 +129,10 @@ class _AdminListViewState extends State<AdminListView> {
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute<void>(
-                        builder: (BuildContext context) => AdminUpdateView(
-                          admin: currentAdmin,
+                        builder: (BuildContext context) => BeaconUpdateScreen(
+                          beacon: currentBeacon,
                           onUpdate: () {
-                            fetchData(); // Call the method to update the stream when the admin is updated.
+                            fetchData();
                           },
                         ),
                       ),
@@ -144,16 +144,15 @@ class _AdminListViewState extends State<AdminListView> {
                   onTap: () async {
                     final wantDelete = await showGenericDialog(
                       context: context,
-                      title: context.loc.sure_want_delete_title,
-                      content: context.loc.sure_want_delete_content,
+                      title: context.loc.beacon_sure_want_delete_title,
+                      content: context.loc.beacon_sure_want_delete_content,
                       optionsBuilder: () => {
                         context.loc.sure_want_delete_option_yes: true,
                         context.loc.sure_want_delete_option_false: false,
                       },
                     );
                     if (context.mounted && wantDelete) {
-                      await AdminService()
-                          .deleteAdmin(context, currentAdmin.id);
+                      await BeaconService().delete(context, currentBeacon);
                       fetchData();
                     }
                   },

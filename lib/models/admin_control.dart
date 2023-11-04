@@ -33,7 +33,9 @@ final adminControlAdmin = AdminControl(
 final adminControlBeacon = AdminControl(
   name: 'Beacons',
   icon: Icons.bluetooth,
-  onTouch: (BuildContext context) {},
+  onTouch: (BuildContext context) {
+    Navigator.of(context).pushNamed(beacon);
+  },
 );
 
 // final adminControlCouponAccess = AdminControls(name: 'coupon access');
