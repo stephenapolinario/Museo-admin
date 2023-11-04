@@ -1,19 +1,28 @@
 import 'package:email_validator/email_validator.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:museo_admin_application/constants/routes.dart';
 import 'package:museo_admin_application/extensions/buildcontext/loc.dart';
 import 'package:museo_admin_application/helpers/loading_complete.dart';
+import 'package:museo_admin_application/models/admin.dart';
 import 'package:museo_admin_application/services/admin_service.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class AdminUpdateView extends StatefulWidget {
+  final ReadAdmin admin;
+  final Function onUpdate;
+
+  const AdminUpdateView({
+    super.key,
+    required this.admin,
+    required this.onUpdate,
+  });
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<AdminUpdateView> createState() => _AdminUpdateViewState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  final formLoginKey = GlobalKey<FormState>();
+class _AdminUpdateViewState extends State<AdminUpdateView> {
+  final adminUpdateKey = GlobalKey<FormState>();
+
   late String? email, password;
 
   @override
@@ -22,44 +31,26 @@ class _LoginScreenState extends State<LoginScreen> {
       backgroundColor: Theme.of(context).colorScheme.primary,
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(context.loc.login_screen_title),
+        title: Text(context.loc.admin_update_view_title),
       ),
-      body: Column(
-        children: [
-          loginTitle(context),
-          SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  loginFields(context),
-                  enterButton(context),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget loginTitle(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 40),
-      child: Text(
-        context.loc.login_title_content,
-        textAlign: TextAlign.center,
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 28,
+      body: Padding(
+        padding: const EdgeInsets.symmetric(
+          vertical: 20,
+          horizontal: 16,
+        ),
+        child: Column(
+          children: [
+            fields(context),
+            enterButton(context),
+          ],
         ),
       ),
     );
   }
 
-  Widget loginFields(BuildContext context) {
+  Widget fields(BuildContext context) {
     return Form(
-      key: formLoginKey,
+      key: adminUpdateKey,
       // autovalidateMode: AutovalidateMode.always,
       child: ListView(
         shrinkWrap: true,
@@ -80,7 +71,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Align(
           alignment: Alignment.topLeft,
           child: Text(
-            context.loc.login_email_hint,
+            context.loc.admin_update_view_email_hint,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 16,
@@ -88,23 +79,23 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
         TextFormField(
+          initialValue: widget.admin.email,
           keyboardType: TextInputType.emailAddress,
-          decoration: InputDecoration(
-            hintText: context.loc.login_your_email_example,
-            contentPadding: const EdgeInsets.only(left: 10),
+          decoration: const InputDecoration(
+            contentPadding: EdgeInsets.only(left: 10),
             fillColor: Colors.white,
             filled: true,
-            border: const OutlineInputBorder(),
-            errorStyle: const TextStyle(
+            border: OutlineInputBorder(),
+            errorStyle: TextStyle(
               color: Colors.red,
             ),
-            errorBorder: const OutlineInputBorder(
+            errorBorder: OutlineInputBorder(
               borderSide: BorderSide(
                 color: Colors.red,
                 width: 2,
               ),
             ),
-            focusedErrorBorder: const OutlineInputBorder(
+            focusedErrorBorder: OutlineInputBorder(
               borderSide: BorderSide(
                 color: Colors.red,
                 width: 2,
@@ -114,7 +105,7 @@ class _LoginScreenState extends State<LoginScreen> {
           validator: (value) {
             if (value != null) {
               if (!EmailValidator.validate(value)) {
-                return context.loc.login_email_not_valid;
+                return context.loc.admin_update_view_email_not_valid;
               }
             }
             return null;
@@ -134,7 +125,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Align(
           alignment: Alignment.topLeft,
           child: Text(
-            context.loc.login_password_hint,
+            context.loc.admin_update_view_password_hint,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 16,
@@ -144,7 +135,7 @@ class _LoginScreenState extends State<LoginScreen> {
         TextFormField(
           obscureText: true,
           decoration: const InputDecoration(
-            hintText: '******',
+            hintText: '*****************',
             contentPadding: EdgeInsets.only(left: 10),
             fillColor: Colors.white,
             filled: true,
@@ -166,9 +157,6 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
           validator: (value) {
-            if (value == null || value == '') {
-              return context.loc.login_fill_password;
-            }
             return null;
           },
           onSaved: (newValue) => setState(() {
@@ -186,34 +174,34 @@ class _LoginScreenState extends State<LoginScreen> {
         const SizedBox(height: 20),
         TextButton(
           child: Text(
-            context.loc.login_enter,
+            context.loc.admin_update_view_update_button,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 18,
             ),
           ),
           onPressed: () async {
+            final navigator = Navigator.of(context);
             FocusManager.instance.primaryFocus?.unfocus();
-            final isValid = formLoginKey.currentState!.validate();
+            final isValid = adminUpdateKey.currentState!.validate();
+
             if (isValid) {
-              final navigator = Navigator.of(context);
-              formLoginKey.currentState!.save();
-              final adminLogin = await AdminService().login(
-                context: context,
-                email: email!,
-                password: password!,
+              adminUpdateKey.currentState!.save();
+              await AdminService().update(
+                context,
+                widget.admin,
+                password!,
+                email!,
               );
+              widget.onUpdate();
+
               if (context.mounted) {
                 await loadingMessageTime(
-                  title: adminLogin == EnumStatus.success
-                      ? context.loc.login_success_title
-                      : context.loc.login_error_title,
-                  subtitle: adminLogin == EnumStatus.success
-                      ? context.loc.login_success_subtitle
-                      : context.loc.login_error_subtitle,
+                  title: context.loc.admin_updated_successfull_title,
+                  subtitle: context.loc.admin_updated_successfull_subtitle,
                   context: context,
                 );
-                navigator.popAndPushNamed(home);
+                navigator.pop();
               }
             }
           },

@@ -1,8 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:museo_admin_application/extensions/buildcontext/loc.dart';
 import 'package:museo_admin_application/models/admin.dart';
-import 'package:museo_admin_application/services/admin.dart';
+import 'package:museo_admin_application/screens/admin/admin_create.dart';
+import 'package:museo_admin_application/screens/admin/admin_update_view.dart';
+import 'package:museo_admin_application/services/admin_service.dart';
 import 'package:museo_admin_application/utilities/generic_dialog.dart';
 
 class AdminListView extends StatefulWidget {
@@ -13,6 +17,28 @@ class AdminListView extends StatefulWidget {
 }
 
 class _AdminListViewState extends State<AdminListView> {
+  late StreamController<List<ReadAdmin>> _adminStreamController;
+  Stream<List<ReadAdmin>> get onListAdminChanged =>
+      _adminStreamController.stream;
+
+  @override
+  void initState() {
+    super.initState();
+    _adminStreamController = StreamController<List<ReadAdmin>>.broadcast();
+    fetchData();
+  }
+
+  @override
+  void dispose() {
+    _adminStreamController.close();
+    super.dispose();
+  }
+
+  void fetchData() async {
+    List<ReadAdmin> admins = await AdminService().getAllAdmin(context);
+    _adminStreamController.sink.add(admins);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,34 +46,45 @@ class _AdminListViewState extends State<AdminListView> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(context.loc.admin_list_title),
+        actions: [
+          IconButton(
+            icon: const Icon(
+              CupertinoIcons.person_add,
+              color: Colors.black,
+              size: 35,
+            ),
+            onPressed: () => {
+              Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (BuildContext context) => AdminCreateView(
+                    onUpdate: () {
+                      fetchData(); // Call the method to update the stream when the admin is updated.
+                    },
+                  ),
+                ),
+              )
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(
           vertical: 20,
           horizontal: 16,
         ),
-        child: FutureBuilder(
-          future: AdminService().getAllAdmin(context),
+        child: StreamBuilder<List<ReadAdmin>?>(
+          stream: onListAdminChanged,
           builder: (context, snapshot) {
-            switch (snapshot.connectionState) {
-              case ConnectionState.done:
-                if (snapshot.data == false || snapshot.data == null) {
-                  return Center(
-                    child: Text(
-                      context.loc.adminn_list_error_retreiving_admins,
-                      textAlign: TextAlign.center,
-                    ),
-                  );
-                }
-
-                List<ReadAdmin> adminList = snapshot.data;
-                return adminsList(adminList);
-
-              default:
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
+            if (snapshot.hasData) {
+              List<ReadAdmin> adminList = snapshot.data!;
+              return adminsList(adminList);
             }
+
+            return const Center(
+              child: CircularProgressIndicator(
+                color: Colors.white,
+              ),
+            );
           },
         ),
       ),
@@ -62,6 +99,8 @@ class _AdminListViewState extends State<AdminListView> {
         return Padding(
           padding: const EdgeInsets.only(bottom: 8),
           child: ListTile(
+            iconColor: Colors.black,
+            key: ValueKey(currentAdmin.id),
             shape: RoundedRectangleBorder(
               side: const BorderSide(color: Colors.black, width: 1),
               borderRadius: BorderRadius.circular(5),
@@ -71,8 +110,8 @@ class _AdminListViewState extends State<AdminListView> {
               CupertinoIcons.person_solid,
               color: Colors.black,
             ),
-            //In the future, this can be the user of the administrador (Right now admin only have email and password)
             title: Text(
+              //In the future, this can be the user of the administrador (Right now admin only have email and password)
               context.loc.admin_list_tile_title,
               style: const TextStyle(
                 color: Colors.black,
@@ -87,6 +126,18 @@ class _AdminListViewState extends State<AdminListView> {
             trailing: PopupMenuButton(
               itemBuilder: (context) => [
                 PopupMenuItem(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (BuildContext context) => AdminUpdateView(
+                          admin: currentAdmin,
+                          onUpdate: () {
+                            fetchData(); // Call the method to update the stream when the admin is updated.
+                          },
+                        ),
+                      ),
+                    );
+                  },
                   child: Text(context.loc.pop_menu_button_update),
                 ),
                 PopupMenuItem(
@@ -99,13 +150,19 @@ class _AdminListViewState extends State<AdminListView> {
                         context.loc.sure_want_delete_option_yes: true,
                         context.loc.sure_want_delete_option_false: false,
                       },
-                    ).then((value) => value);
+                    );
                     if (context.mounted && wantDelete) {
                       await AdminService()
                           .deleteAdmin(context, currentAdmin.id);
+                      fetchData();
                     }
                   },
-                  child: Text(context.loc.pop_menu_button_delete),
+                  child: Text(
+                    context.loc.pop_menu_button_delete,
+                    style: const TextStyle(
+                      color: Colors.red,
+                    ),
+                  ),
                 ),
               ],
             ),

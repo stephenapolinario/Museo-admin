@@ -29,6 +29,27 @@
 	"sure_want_delete_option_yes": "Sim, quero deletar",
 	"sure_want_delete_option_false": "Não",
 
+	"@_ADMINISTRATOR_UPDATE_VIEW": {},
+	"admin_update_view_title": "Atualizar administrador",
+    "admin_update_view_email_hint": "Email",
+	"admin_update_view_email_not_valid": "Esse não é um email válido",
+	"admin_update_view_update_button": "Atualizar",
+    "admin_update_view_password_hint": "Senha",
+	"admin_update_view_password_not_valid": "Digite um senha",
+	"admin_updated_successfull_title": "Sucesso",
+	"admin_updated_successfull_subtitle": "Administrador atualizado\nRedirecionando...",
+
+	"@_ADMINISTRATOR_CREATE_VIEW": {},
+	"admin_create_view_title": "Criar administrator",
+	"create_admin_email_hint": "administrador@email.com",
+	"create_admin_no_password": "Por favor, preencha a senha",
+	"admin_created_successful_title": "Sucesso",
+	"admin_created_successful_subtitle": "Admin criado!\nRedirecionando...",
+	"admin_create_view_update_button": "Criar",
+	"admin_create_error_title": "Oops",
+	"admin_create_error_subtitle": "Houve um erro...\nTente novamente",
+	"admin_create_duplicate_email_content": "O email fornecido já existe\nUtilize outro email por favor",
+
 	"@_JUST_TO_MAKE_THE_LASTONE_WITHOUT_COMMA": {},
     "under_construction": "Under construction..."
 }
