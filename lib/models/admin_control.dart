@@ -43,7 +43,9 @@ final adminControlBeacon = AdminControl(
 final adminControlCoupon = AdminControl(
   name: 'Cupoms',
   icon: Icons.discount,
-  onTouch: (BuildContext context) {},
+  onTouch: (BuildContext context) {
+    Navigator.of(context).pushNamed(couponHome);
+  },
 );
 
 // final adminControlCouponType = AdminControls(name: 'coupon type');

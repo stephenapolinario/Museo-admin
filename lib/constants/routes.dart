@@ -9,7 +9,10 @@ const admin = '/admin';
 const beacon = '/beacon';
 
 // Coupons
-const coupon = '/coupon';
+const couponHome = '/coupon';
+const couponList = '/coupon/list';
+const couponAccess = '/coupon/accessLevel';
+const couponType = '/coupon/type';
 
 // Emblems
 const emblem = '/emblem';

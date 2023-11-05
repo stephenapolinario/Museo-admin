@@ -1,4 +1,9 @@
-{   "@_LOGIN_SCREEN": {},
+{  
+	"@_GENERALS": {},
+	"create_button": "Criar",
+	"update_button": "Atualizar",
+
+	"@_LOGIN_SCREEN": {},
 	"login_screen_title": "Login",
 	"login_title_content": "Painel administrativo",
     "login_email_hint": "Email",
@@ -81,6 +86,50 @@
 	"beacon_updated_successful_subtitle": "Beacon atualizado\nRedirecionando...",
 	"beacon_updated_error_title": "Erro",
 	"beacon_updated_error_subtitle": "Houve um erro...\nTente novamente",
+
+	"@_COUPON_HOME_SCREEN": {},
+	"coupon_home_screen": "Cupoms",
+
+	"@_COUPON_ACCESS_LIST_SCREEN": {},
+	"coupon_access_list_title": "Cupoms - Níveis de acesso",
+	"coupon_access_list_tile_title": "Nível de acesso",
+
+	"@_COUPON_TYPE_LIST_SCREEN": {},
+	"coupon_type_list_title": "Tipos de cupoms",
+	"coupon_type_list_tile_title": "Tipo de cupom",
+
+	"@_COUPON_LIST_SCREEN": {},
+	"coupon_list_screen_title": "Cupoms",
+	"coupon_list_tile_title": "Cupom",
+	"coupon_sure_want_delete_title": "Você tem certeza que quer deletar esse cupom?",
+	"coupon_sure_want_delete_content": "Após o cupom ser deletado, não será possível recuperar o mesmo!",
+
+	"@_COUPON_GENERAL_SCREEN": {},
+	"coupon_code_input_name": "Código",
+	"coupon_type_input_name": "Tipo",
+	"coupon_access_input_name": "Acesso", 
+	"coupon_code_hint": "Código",
+	"coupon_select_input": "Selecione",
+	
+	"@_COUPON_CREATE_SCREEN": {},
+	"create_coupon_title": "Criar cupom",
+	"create_coupon_screen_code_not_valid": "Por favor, de um código ao cupom",
+	"create_coupon_coupon_type_fill": "Selecione um ou mais tipo do cupom",
+	"coupon_percentage_input_name": "Porcentagem do desconto",
+	"coupon_value_input_name": "Valor do desconto",
+	"coupon_value_input_hint": "10.00",
+	"coupon_percentage_input_hint": "10",
+	"create_coupon_screen_value_not_valid": "Por favor, escolha um valor",
+	"create_coupon_screen_percentage_not_valid": "Por favor, escolha um valor",
+	"create_coupon_success_title": "Sucesso",
+	"create_coupon_success_subtitle": "Cupom criado!\nRedirecionando...",
+	"create_coupon_error_title": "Erro",
+	"create_coupon_duplicated_code_error_content": "Esse código já está sendo utilizado, escolha outro\n",
+	"create_coupon_error_content": "Ocorreu algum erro ao criar o cupom...",
+	
+	"@_COUPON_UPDATE_SCREEN": {},
+	"update_coupon_title": "Atualizar cupom",
+	"update_coupon_success_subtitle": "Cupom atualizado!\nRedirecionando...",
 
 	"@_JUST_TO_MAKE_THE_LASTONE_WITHOUT_COMMA": {},
     "under_construction": "Under construction..."

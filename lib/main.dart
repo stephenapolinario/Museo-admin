@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:museo_admin_application/constants/routes.dart';
+import 'package:museo_admin_application/screens/coupon/coupon_access_level_list_screen.dart';
+import 'package:museo_admin_application/screens/coupon/coupon_home_screen.dart';
 import 'package:museo_admin_application/screens/admin/admin_list_screen.dart';
 import 'package:museo_admin_application/screens/beacon/beacon_list_screen.dart';
+import 'package:museo_admin_application/screens/coupon/coupon_list_screen.dart';
+import 'package:museo_admin_application/screens/coupon/coupon_type_list_screen.dart';
 import 'package:museo_admin_application/screens/home.dart';
 import 'package:museo_admin_application/screens/login.dart';
 import 'package:museo_admin_application/providers/admin.dart';
@@ -41,6 +45,10 @@ class MyApp extends StatelessWidget {
         home: (context) => const HomeScreen(),
         admin: (context) => const AdminListScreen(),
         beacon: (context) => const BeaconListScreen(),
+        couponHome: (context) => const CouponHomeScreen(),
+        couponAccess: (context) => const CouponAccessLevelListScreen(),
+        couponType: (context) => const CouponTypeListScreen(),
+        couponList: (context) => const CouponListScreen(),
       },
     );
   }
