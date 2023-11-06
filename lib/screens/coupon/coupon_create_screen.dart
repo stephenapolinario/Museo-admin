@@ -63,7 +63,7 @@ class _CouponCreateScreenState extends State<CouponCreateScreen> {
           .map(
             (couponType) => MultiSelectItem<CouponType>(
               couponType,
-              couponType.type.toCapitalize(),
+              couponType.type.toCapitalizeEveryInitialWord(),
             ),
           )
           .toList();
@@ -72,7 +72,7 @@ class _CouponCreateScreenState extends State<CouponCreateScreen> {
           .map(
             (couponAccess) => MultiSelectItem<CouponAccess>(
               couponAccess,
-              couponAccess.access.toCapitalize(),
+              couponAccess.access.toCapitalizeEveryInitialWord(),
             ),
           )
           .toList();

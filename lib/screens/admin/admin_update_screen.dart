@@ -32,7 +32,8 @@ class _AdminUpdateScreenState extends State<AdminUpdateScreen> {
       backgroundColor: mainBackgroundColor,
       appBar: AppBar(
         backgroundColor: mainAppBarColor,
-        title: Text(context.loc.admin_update_screen_title.toCapitalize()),
+        title: Text(context.loc.admin_update_screen_title
+            .toCapitalizeEveryInitialWord()),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(

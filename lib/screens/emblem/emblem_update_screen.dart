@@ -23,7 +23,7 @@ class EmblemUpdateScreen extends StatefulWidget {
 }
 
 class _EmblemUpdateScreenState extends State<EmblemUpdateScreen> {
-  final emblemCreateKey = GlobalKey<FormState>();
+  final emblemUpdateKey = GlobalKey<FormState>();
 
   late List<Quiz> quizzes;
   late List<DropdownMenuItem<Quiz>> quizzesItems;
@@ -60,7 +60,8 @@ class _EmblemUpdateScreenState extends State<EmblemUpdateScreen> {
       backgroundColor: mainBackgroundColor,
       appBar: AppBar(
         backgroundColor: mainAppBarColor,
-        title: Text(context.loc.update_coupon_screen_title.toCapitalize()),
+        title: Text(context.loc.update_coupon_screen_title
+            .toCapitalizeEveryInitialWord()),
       ),
       body: FutureBuilder(
         future: fetchDataFuture,
@@ -95,7 +96,7 @@ class _EmblemUpdateScreenState extends State<EmblemUpdateScreen> {
 
   Widget fields(BuildContext context) {
     return Form(
-      key: emblemCreateKey,
+      key: emblemUpdateKey,
       autovalidateMode: AutovalidateMode.always,
       child: ListView(
         shrinkWrap: true,
@@ -480,10 +481,10 @@ class _EmblemUpdateScreenState extends State<EmblemUpdateScreen> {
           onPressed: () async {
             final navigator = Navigator.of(context);
             FocusManager.instance.primaryFocus?.unfocus();
-            final isValid = emblemCreateKey.currentState!.validate();
+            final isValid = emblemUpdateKey.currentState!.validate();
 
             if (isValid) {
-              emblemCreateKey.currentState!.save();
+              emblemUpdateKey.currentState!.save();
               final variableFromService = await EmblemService().update(
                 context,
                 title!,

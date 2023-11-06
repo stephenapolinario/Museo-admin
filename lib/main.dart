@@ -12,6 +12,7 @@ import 'package:museo_admin_application/screens/emblem/emblem_list_screen.dart';
 import 'package:museo_admin_application/screens/home_screen.dart';
 import 'package:museo_admin_application/screens/login_screen.dart';
 import 'package:museo_admin_application/providers/admin.dart';
+import 'package:museo_admin_application/screens/tour/tour_list_screen.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -51,6 +52,7 @@ class MyApp extends StatelessWidget {
         couponType: (context) => const CouponTypeListScreen(),
         couponList: (context) => const CouponListScreen(),
         emblem: (context) => const EmblemListScreen(),
+        tour: (context) => const TourListScreen(),
       },
     );
   }

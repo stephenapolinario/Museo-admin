@@ -28,7 +28,7 @@ class CouponUpdateScreen extends StatefulWidget {
 }
 
 class _CouponUpdateScreenState extends State<CouponUpdateScreen> {
-  final couponCreateKey = GlobalKey<FormState>();
+  final couponUpdateKey = GlobalKey<FormState>();
   // Because of coupon use couponTypes and couponAccess, we need to get this from the API...
   // 1. Coupon Access
   late List<CouponAccess> couponAccess;
@@ -69,7 +69,7 @@ class _CouponUpdateScreenState extends State<CouponUpdateScreen> {
           .map(
             (couponType) => MultiSelectItem<CouponType>(
               couponType,
-              couponType.type.toCapitalize(),
+              couponType.type.toCapitalizeEveryInitialWord(),
             ),
           )
           .toList();
@@ -78,7 +78,7 @@ class _CouponUpdateScreenState extends State<CouponUpdateScreen> {
           .map(
             (couponAccess) => MultiSelectItem<CouponAccess>(
               couponAccess,
-              couponAccess.access.toCapitalize(),
+              couponAccess.access.toCapitalizeEveryInitialWord(),
             ),
           )
           .toList();
@@ -139,7 +139,7 @@ class _CouponUpdateScreenState extends State<CouponUpdateScreen> {
 
   Widget fields(BuildContext context) {
     return Form(
-      key: couponCreateKey,
+      key: couponUpdateKey,
       child: ListView(
         shrinkWrap: true,
         padding: const EdgeInsets.all(16),
@@ -439,10 +439,10 @@ class _CouponUpdateScreenState extends State<CouponUpdateScreen> {
           onPressed: () async {
             final navigator = Navigator.of(context);
             FocusManager.instance.primaryFocus?.unfocus();
-            final isValid = couponCreateKey.currentState!.validate();
+            final isValid = couponUpdateKey.currentState!.validate();
 
             if (isValid) {
-              couponCreateKey.currentState!.save();
+              couponUpdateKey.currentState!.save();
               final variableFromService = await CouponService().update(
                 widget.coupon,
                 context,

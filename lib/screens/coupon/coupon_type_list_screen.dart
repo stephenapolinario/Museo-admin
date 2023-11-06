@@ -45,7 +45,7 @@ class _CouponTypeListScreenState extends State<CouponTypeListScreen> {
       appBar: AppBar(
         backgroundColor: mainAppBarColor,
         title: Text(
-          context.loc.coupon_type_list_title.toCapitalize(),
+          context.loc.coupon_type_list_title.toCapitalizeEveryInitialWord(),
           style: const TextStyle(
             fontSize: 20,
           ),
@@ -120,7 +120,7 @@ class _CouponTypeListScreenState extends State<CouponTypeListScreen> {
               ),
             ),
             subtitle: Text(
-              currentCouponAccess.type.toCapitalize(),
+              currentCouponAccess.type.toCapitalizeEveryInitialWord(),
               style: const TextStyle(
                 color: mainItemContentColor,
               ),

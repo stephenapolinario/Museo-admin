@@ -93,7 +93,9 @@ final adminControlTicket = AdminControl(
 final adminControlTour = AdminControl(
   name: 'Tours',
   icon: Icons.route,
-  onTouch: (BuildContext context) {},
+  onTouch: (BuildContext context) {
+    Navigator.of(context).pushNamed(tour);
+  },
 );
 
 final adminControlUser = AdminControl(

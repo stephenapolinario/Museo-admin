@@ -21,7 +21,7 @@ class BeaconUpdateScreen extends StatefulWidget {
 }
 
 class _BeaconUpdateScreenState extends State<BeaconUpdateScreen> {
-  final beaconCreateKey = GlobalKey<FormState>();
+  final beaconUpdateKey = GlobalKey<FormState>();
   late String? name, uuid;
 
   @override
@@ -30,7 +30,8 @@ class _BeaconUpdateScreenState extends State<BeaconUpdateScreen> {
       backgroundColor: mainBackgroundColor,
       appBar: AppBar(
         backgroundColor: mainAppBarColor,
-        title: Text(context.loc.beacon_update_screen_title.toCapitalize()),
+        title: Text(context.loc.beacon_update_screen_title
+            .toCapitalizeEveryInitialWord()),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(
@@ -49,7 +50,7 @@ class _BeaconUpdateScreenState extends State<BeaconUpdateScreen> {
 
   Widget fields(BuildContext context) {
     return Form(
-      key: beaconCreateKey,
+      key: beaconUpdateKey,
       // autovalidateMode: AutovalidateMode.always,
       child: ListView(
         shrinkWrap: true,
@@ -187,10 +188,10 @@ class _BeaconUpdateScreenState extends State<BeaconUpdateScreen> {
           onPressed: () async {
             final navigator = Navigator.of(context);
             FocusManager.instance.primaryFocus?.unfocus();
-            final isValid = beaconCreateKey.currentState!.validate();
+            final isValid = beaconUpdateKey.currentState!.validate();
 
             if (isValid) {
-              beaconCreateKey.currentState!.save();
+              beaconUpdateKey.currentState!.save();
               final createBeacon = await BeaconService().update(
                 context,
                 widget.beacon.id,

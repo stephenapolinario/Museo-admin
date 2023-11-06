@@ -134,7 +134,7 @@
 	"@_EMBLEM_LIST_SCREEN": {},
 	"emblem_list_screen_title": "Emblemas",
 	"emblem_sure_want_delete_title": "Você tem certeza que quer deletar esse emblem?",
-	"emblem_sure_want_delete_content": "Após o emblem ser deletado, não será possível recuperar o mesmo!\nFique atento, pois poderá ocasionar error para os usuários/quizzes!",
+	"emblem_sure_want_delete_content": "Após o emblem ser deletado, não será possível recuperar o mesmo!\nFique atento, pois poderá ocasionar erros para os usuários/quizzes!",
 	
 	"@_EMBLEM_SCREEN": {},
 	"create_emblem_title_hint": "Nome do emblema",
@@ -163,13 +163,42 @@
 	"create_emblem_error_content": "Ocorreu algum erro ao criar o emblema...",
 	"create_emblem_error_title": "Erro",
 	
-	"@_EMBLEM_CREATE_SCREEN": {},
+	"@_EMBLEM_UPDATE_SCREEN": {},
 	"update_coupon_screen_title": "Atualizar Emblema",
 	"update_emblem_success_title": "Sucesso",
 	"update_emblem_success_content": "Emblema atualizado!\nRedirecionando...",
 	"update_emblem_error_content": "Ocorreu algum erro ao criar o emblema...",
 	"update_emblem_error_title": "Erro",
 
+	"@_TOUR_DEFAULT_SCREEN": {},
+	"tour_title_input": "Título",
+	"tour_title_hint": "Título do tour",
+	"tour_title_not_valid": "Por favor, escolha um título para o tour",
+	"tour_subtitle_input": "Subtítulo",
+	"tour_subtitle_hint": "Subtítulo do tour",
+	"tour_subtitle_not_valid": "Por favor, escolha um subtítulo para o tour",
+	"tour_image_input": "URL da imagem",
+	"tour_image_hint": "https://www.linkDaSuaImagemAqui.com.br",
+	"tour_image_not_valid": "Por favor, digite a url da imagem escolhida",
+
+	"@_TOUR_LIST_SCREEN": {},
+	"tour_screen_list": "Tours",
+	"tour_sure_want_delete_title": "Você tem certeza que quer deletar esse tour?",
+	"tour_sure_want_delete_content": "Após o tour ser deletado, não será possível recuperar o mesmo!\nFique atento, pois poderá ocasionar erros!",
+	
+	"@_TOUR_CREATE_SCREEN": {},
+	"create_tour_screen_title": "Criar tour",
+	"create_tour_success_title": "Sucesso",
+	"create_tour_error_title": "Erro",
+	"create_tour_success_content": "Tour criado!\nRedirecionando...",
+	"create_tour_error_content": "Ocorreu algum erro ao criar o tour...",
+	
+	"@_TOUR_CREATE_SCREEN": {},
+	"update_tour_screen_title": "Atualizar tour",
+	"update_tour_success_title": "Sucesso",
+	"update_tour_error_title": "Erro",
+	"update_tour_success_content": "Tour atualizado!\nRedirecionando...",
+	"update_tour_error_content": "Ocorreu algum erro ao atualizar o tour...",
 
 	"@_JUST_TO_MAKE_THE_LASTONE_WITHOUT_COMMA": {},
     "under_construction": "Under construction..."

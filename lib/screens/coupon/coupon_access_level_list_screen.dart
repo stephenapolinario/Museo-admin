@@ -50,7 +50,7 @@ class CouponAccessLevelListScreenState
       appBar: AppBar(
         backgroundColor: mainAppBarColor,
         title: Text(
-          context.loc.coupon_access_list_title.toCapitalize(),
+          context.loc.coupon_access_list_title.toCapitalizeEveryInitialWord(),
           style: const TextStyle(
             fontSize: 20,
           ),
@@ -125,7 +125,7 @@ class CouponAccessLevelListScreenState
               ),
             ),
             subtitle: Text(
-              currentCouponAccess.access.toCapitalize(),
+              currentCouponAccess.access.toCapitalizeEveryInitialWord(),
               style: const TextStyle(
                 color: mainItemContentColor,
               ),

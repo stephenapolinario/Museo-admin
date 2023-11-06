@@ -49,7 +49,8 @@ class EmblemListScreenState extends State<EmblemListScreen> {
       backgroundColor: mainBackgroundColor,
       appBar: AppBar(
         backgroundColor: mainAppBarColor,
-        title: Text(context.loc.emblem_list_screen_title.toCapitalize()),
+        title: Text(context.loc.emblem_list_screen_title
+            .toCapitalizeEveryInitialWord()),
         actions: [
           IconButton(
             icon: const Icon(
@@ -110,7 +111,7 @@ class EmblemListScreenState extends State<EmblemListScreen> {
             ),
             tileColor: mainMenuItemsColor,
             leading: const Icon(
-              Icons.type_specimen,
+              Icons.badge,
               color: Colors.black,
             ),
             title: Text(

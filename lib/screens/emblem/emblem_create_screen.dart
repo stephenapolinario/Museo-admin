@@ -47,7 +47,7 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
           .map(
             (couponType) => MultiSelectItem<Quiz>(
               couponType,
-              couponType.title.toCapitalize(),
+              couponType.title.toCapitalizeEveryInitialWord(),
             ),
           )
           .toList();
@@ -98,6 +98,7 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
       key: emblemCreateKey,
       autovalidateMode: AutovalidateMode.always,
       child: ListView(
+        physics: const NeverScrollableScrollPhysics(),
         shrinkWrap: true,
         padding: const EdgeInsets.all(16),
         children: [

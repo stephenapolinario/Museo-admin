@@ -28,7 +28,8 @@ class _AdminCreateScreenState extends State<AdminCreateScreen> {
       backgroundColor: mainBackgroundColor,
       appBar: AppBar(
         backgroundColor: mainAppBarColor,
-        title: Text(context.loc.admin_create_screen_title.toCapitalize()),
+        title: Text(context.loc.admin_create_screen_title
+            .toCapitalizeEveryInitialWord()),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(
