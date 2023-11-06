@@ -214,7 +214,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       : context.loc.login_error_subtitle,
                   context: context,
                 );
-                navigator.popAndPushNamed(home);
+                adminLogin == EnumAdminStatus.success
+                    ? navigator.popAndPushNamed(home)
+                    : null;
               }
             }
           },

@@ -111,7 +111,7 @@ class MuseumPieceListScreenState extends State<MuseumPieceListScreen> {
               ),
               tileColor: mainMenuItemsColor,
               leading: const Icon(
-                Icons.bluetooth,
+                Icons.museum_outlined,
                 color: Colors.black,
               ),
               title: Text(

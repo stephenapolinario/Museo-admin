@@ -103,7 +103,9 @@ final adminControlTour = AdminControl(
 final adminControlUser = AdminControl(
   name: 'Usuários',
   icon: Icons.supervised_user_circle,
-  onTouch: (BuildContext context) {},
+  onTouch: (BuildContext context) {
+    Navigator.of(context).pushNamed(user);
+  },
 );
 
 final adminLogout = AdminControl(

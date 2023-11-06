@@ -245,6 +245,9 @@
 	"update_museum_piece_error_title": "Erro",
 	"update_museum_piece_success_content": "Peça atualizada!\nRedirecionando...",
 	"update_museum_piece_error_content": "Ocorreu algum erro ao atualizar a peça...",
+	
+	"@_USERS_LIST_SCREEN": {},
+	"user_screen_list_title": "Usuários",
 
 	"@_JUST_TO_MAKE_THE_LASTONE_WITHOUT_COMMA": {},
     "under_construction": "Under construction..."
