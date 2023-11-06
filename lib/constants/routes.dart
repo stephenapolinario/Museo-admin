@@ -20,8 +20,8 @@ const emblem = '/emblem';
 // Museum Information
 const museumInformation = '/museumInformation';
 
-// POI
-const pointsOfInterest = '/pointsOfInterest';
+// Museum Pieces
+const museumPiece = '/museumPiece';
 
 // Products
 const products = '/products';

@@ -65,9 +65,11 @@ final adminControlMuseumInformation = AdminControl(
 );
 
 final adminControlMuseumPiece = AdminControl(
-  name: 'Pontos de interesse',
-  icon: Icons.interests,
-  onTouch: (BuildContext context) {},
+  name: 'Peças de museu',
+  icon: Icons.museum_outlined,
+  onTouch: (BuildContext context) {
+    Navigator.of(context).pushNamed(museumPiece);
+  },
 );
 
 // final adminControlProductCategory = AdminControls(name: 'product category');

@@ -51,6 +51,10 @@ class _EmblemUpdateScreenState extends State<EmblemUpdateScreen> {
           child: Text(value.title), // Display the appropriate value
         );
       }).toList();
+
+      selectedQuiz = quizzes.firstWhere(
+        (beacon) => beacon.id == widget.emblem.quiz.id,
+      );
     }
   }
 
@@ -396,7 +400,7 @@ class _EmblemUpdateScreenState extends State<EmblemUpdateScreen> {
           ),
         ),
         DropdownButtonFormField<Quiz?>(
-          value: quizzes.firstWhere((quiz) => quiz.id == widget.emblem.quiz.id),
+          value: selectedQuiz,
           onChanged: (Quiz? newValue) {
             setState(() {
               selectedQuiz = newValue;
@@ -432,35 +436,6 @@ class _EmblemUpdateScreenState extends State<EmblemUpdateScreen> {
             return null;
           },
         ),
-        // MultiSelectBottomSheetField<Quiz?>(
-        //   searchable: false,
-        //   buttonText: Text(
-        //     context.loc.coupon_select_input,
-        //     style: const TextStyle(
-        //       color: Colors.black54,
-        //       fontSize: 16,
-        //       fontWeight: FontWeight.w500,
-        //     ),
-        //   ),
-        //   decoration: BoxDecoration(
-        //     color: Colors.white,
-        //     borderRadius: BorderRadius.circular(3),
-        //   ),
-        //   buttonIcon: const Icon(Icons.search),
-        //   items: quizzesItems,
-        //   listType: MultiSelectListType.CHIP,
-        //   validator: (values) {
-        //     if (values == null || values.isEmpty) {
-        //       return context.loc.create_emblem_quiz_not_valid;
-        //     }
-        //     return null;
-        //   },
-        //   onConfirm: (values) {
-        //     setState(() {
-        //       selectedQuizzes = values;
-        //     });
-        //   },
-        // ),
       ],
     );
   }

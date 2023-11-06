@@ -1,36 +1,42 @@
 import 'package:flutter/material.dart';
-import 'package:museo_admin_application/constants/colors.dart';
-import 'package:museo_admin_application/extensions/buildcontext/loc.dart';
 import 'package:museo_admin_application/helpers/loading_complete.dart';
-import 'package:museo_admin_application/models/quiz.dart';
-import 'package:museo_admin_application/services/emblem_service.dart';
-import 'package:museo_admin_application/services/quiz_service.dart';
+import 'package:museo_admin_application/extensions/buildcontext/loc.dart';
+import 'package:museo_admin_application/constants/colors.dart';
+import 'package:museo_admin_application/models/beacon.dart';
+import 'package:museo_admin_application/models/tour.dart';
+import 'package:museo_admin_application/services/beacon_service.dart';
+import 'package:museo_admin_application/services/museum_piece_service.dart';
+import 'package:museo_admin_application/services/tour_service.dart';
 import 'package:museo_admin_application/utilities/check_regex_color.dart';
 
-class EmblemCreateScreen extends StatefulWidget {
+class MuseumPieceCreateScreen extends StatefulWidget {
   final Function onUpdate;
 
-  const EmblemCreateScreen({
+  const MuseumPieceCreateScreen({
     super.key,
     required this.onUpdate,
   });
 
   @override
-  State<EmblemCreateScreen> createState() => _EmblemCreateScreenState();
+  State<MuseumPieceCreateScreen> createState() =>
+      _MuseumPieceCreateScreenState();
 }
 
-class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
-  final emblemCreateKey = GlobalKey<FormState>();
+class _MuseumPieceCreateScreenState extends State<MuseumPieceCreateScreen> {
+  final museumPieceCreateKey = GlobalKey<FormState>();
+  late String? title, subtitle, description, image, color;
+  late int? rssi;
+  late Beacon? selectedBeacon;
+  late Tour? selectedTour;
 
-  late List<Quiz> quizzes;
-  late String? title, image, color;
-  late Quiz? selectedQuiz;
-  late int? minPoints, maxPoints;
+  late List<Beacon> beaconList;
+  late List<Tour> tourList;
 
   // To prevent reload
   late Future<void> fetchDataFuture;
 
-  late List<DropdownMenuItem<Quiz>> quizzesItems;
+  late List<DropdownMenuItem<Beacon>> beaconItems;
+  late List<DropdownMenuItem<Tour>> tourItems;
 
   @override
   void initState() {
@@ -39,13 +45,21 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
   }
 
   Future<void> fetchData() async {
-    quizzes = await QuizService().readAll(context);
-
+    beaconList = await BeaconService().readAll(context);
     if (context.mounted) {
-      quizzesItems = quizzes.map<DropdownMenuItem<Quiz>>((Quiz value) {
-        return DropdownMenuItem<Quiz>(
+      tourList = await TourService().readAll(context);
+
+      beaconItems = beaconList.map<DropdownMenuItem<Beacon>>((Beacon value) {
+        return DropdownMenuItem<Beacon>(
           value: value,
-          child: Text(value.title), // Display the appropriate value
+          child: Text(value.name),
+        );
+      }).toList();
+
+      tourItems = tourList.map<DropdownMenuItem<Tour>>((Tour value) {
+        return DropdownMenuItem<Tour>(
+          value: value,
+          child: Text(value.title),
         );
       }).toList();
     }
@@ -57,7 +71,7 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
       backgroundColor: mainBackgroundColor,
       appBar: AppBar(
         backgroundColor: mainAppBarColor,
-        title: Text(context.loc.create_emblem_screen_title),
+        title: Text(context.loc.create_museum_piece_screen_title),
       ),
       body: FutureBuilder(
         future: fetchDataFuture,
@@ -92,7 +106,7 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
 
   Widget fields(BuildContext context) {
     return Form(
-      key: emblemCreateKey,
+      key: museumPieceCreateKey,
       autovalidateMode: AutovalidateMode.always,
       child: ListView(
         physics: const NeverScrollableScrollPhysics(),
@@ -101,15 +115,19 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
         children: [
           titleInput(context),
           const SizedBox(height: 15),
+          subtitleInput(context),
+          const SizedBox(height: 15),
+          descriptionInput(context),
+          const SizedBox(height: 15),
           imageInput(context),
           const SizedBox(height: 15),
-          minPointsInput(context),
-          const SizedBox(height: 15),
-          maxPointsInput(context),
+          rssiInput(context),
           const SizedBox(height: 15),
           colorInput(context),
           const SizedBox(height: 15),
-          quizInput(context),
+          beaconInput(context),
+          const SizedBox(height: 15),
+          tourInput(context),
         ],
       ),
     );
@@ -121,7 +139,7 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
         Align(
           alignment: Alignment.topLeft,
           child: Text(
-            context.loc.emblem_title_input,
+            context.loc.museum_peice_screen_title_input,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 16,
@@ -130,7 +148,7 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
         ),
         TextFormField(
           decoration: InputDecoration(
-            hintText: context.loc.create_emblem_title_hint,
+            hintText: context.loc.museum_peice_screen_title_hint,
             contentPadding: const EdgeInsets.only(left: 10),
             fillColor: Colors.white,
             filled: true,
@@ -153,12 +171,112 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
           ),
           validator: (value) {
             if (value == null || value == '') {
-              return context.loc.emblem_title_not_valid;
+              return context.loc.museum_peice_screen_title_not_valid;
             }
             return null;
           },
           onSaved: (newValue) => setState(() {
             title = newValue;
+          }),
+        ),
+      ],
+    );
+  }
+
+  Widget subtitleInput(BuildContext context) {
+    return Column(
+      children: [
+        Align(
+          alignment: Alignment.topLeft,
+          child: Text(
+            context.loc.museum_peice_screen_subtitle_input,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+            ),
+          ),
+        ),
+        TextFormField(
+          decoration: InputDecoration(
+            hintText: context.loc.museum_peice_screen_subtitle_hint,
+            contentPadding: const EdgeInsets.only(left: 10),
+            fillColor: Colors.white,
+            filled: true,
+            border: const OutlineInputBorder(),
+            errorStyle: const TextStyle(
+              color: Colors.red,
+            ),
+            errorBorder: const OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.red,
+                // width: 2,
+              ),
+            ),
+            focusedErrorBorder: const OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.red,
+                width: 2,
+              ),
+            ),
+          ),
+          validator: (value) {
+            if (value == null || value == '') {
+              return context.loc.museum_peice_screen_subtitle_not_valid;
+            }
+            return null;
+          },
+          onSaved: (newValue) => setState(() {
+            subtitle = newValue;
+          }),
+        ),
+      ],
+    );
+  }
+
+  Widget descriptionInput(BuildContext context) {
+    return Column(
+      children: [
+        Align(
+          alignment: Alignment.topLeft,
+          child: Text(
+            context.loc.museum_peice_screen_description_input,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+            ),
+          ),
+        ),
+        TextFormField(
+          decoration: InputDecoration(
+            hintText: context.loc.museum_peice_screen_description_hint,
+            contentPadding: const EdgeInsets.only(left: 10),
+            fillColor: Colors.white,
+            filled: true,
+            border: const OutlineInputBorder(),
+            errorStyle: const TextStyle(
+              color: Colors.red,
+            ),
+            errorBorder: const OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.red,
+                // width: 2,
+              ),
+            ),
+            focusedErrorBorder: const OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.red,
+                width: 2,
+              ),
+            ),
+          ),
+          validator: (value) {
+            if (value == null || value == '') {
+              return context.loc.museum_peice_screen_description_not_valid;
+            }
+            return null;
+          },
+          onSaved: (newValue) => setState(() {
+            description = newValue;
           }),
         ),
       ],
@@ -171,7 +289,7 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
         Align(
           alignment: Alignment.topLeft,
           child: Text(
-            context.loc.emblem_image_input,
+            context.loc.museum_peice_screen_image_input,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 16,
@@ -180,7 +298,7 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
         ),
         TextFormField(
           decoration: InputDecoration(
-            hintText: context.loc.emblem_image_hint,
+            hintText: context.loc.museum_peice_screen_image_hint,
             contentPadding: const EdgeInsets.only(left: 10),
             fillColor: Colors.white,
             filled: true,
@@ -205,7 +323,7 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
             if (value != null) {
               bool validURL = Uri.tryParse(value)?.hasAbsolutePath ?? false;
               if (!validURL) {
-                return context.loc.emblem_image_not_valid;
+                return context.loc.museum_peice_screen_image_not_valid;
               }
             }
             return null;
@@ -218,13 +336,13 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
     );
   }
 
-  Widget minPointsInput(BuildContext context) {
+  Widget rssiInput(BuildContext context) {
     return Column(
       children: [
         Align(
           alignment: Alignment.topLeft,
           child: Text(
-            context.loc.emblem_minpoints_input,
+            context.loc.museum_peice_screen_rssi_input,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 16,
@@ -232,9 +350,8 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
           ),
         ),
         TextFormField(
-          keyboardType: TextInputType.number,
           decoration: InputDecoration(
-            hintText: context.loc.emblem_minpoints_hint,
+            hintText: context.loc.museum_peice_screen_rssi_hint,
             contentPadding: const EdgeInsets.only(left: 10),
             fillColor: Colors.white,
             filled: true,
@@ -256,66 +373,13 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
             ),
           ),
           validator: (value) {
-            final n = num.tryParse(value!);
-            if (n == null || n < 0 || n > 100) {
-              return context.loc.emblem_minpoints_not_valid;
+            if (value == null) {
+              return context.loc.museum_peice_screen_rssi_not_valid;
             }
             return null;
           },
           onSaved: (newValue) => setState(() {
-            minPoints = int.tryParse(newValue!);
-          }),
-        ),
-      ],
-    );
-  }
-
-  Widget maxPointsInput(BuildContext context) {
-    return Column(
-      children: [
-        Align(
-          alignment: Alignment.topLeft,
-          child: Text(
-            context.loc.emblem_maxpoints_input,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-            ),
-          ),
-        ),
-        TextFormField(
-          keyboardType: TextInputType.number,
-          decoration: InputDecoration(
-            hintText: context.loc.emblem_maxpoints_hint,
-            contentPadding: const EdgeInsets.only(left: 10),
-            fillColor: Colors.white,
-            filled: true,
-            border: const OutlineInputBorder(),
-            errorStyle: const TextStyle(
-              color: Colors.red,
-            ),
-            errorBorder: const OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.red,
-                // width: 2,
-              ),
-            ),
-            focusedErrorBorder: const OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.red,
-                width: 2,
-              ),
-            ),
-          ),
-          validator: (value) {
-            final n = num.tryParse(value!);
-            if (n == null || n < 0 || n > 100) {
-              return context.loc.emblem_maxpoints_not_valid;
-            }
-            return null;
-          },
-          onSaved: (newValue) => setState(() {
-            maxPoints = int.tryParse(newValue!);
+            rssi = int.tryParse(newValue!);
           }),
         ),
       ],
@@ -328,7 +392,7 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
         Align(
           alignment: Alignment.topLeft,
           child: Text(
-            context.loc.emblem_color_input,
+            context.loc.museum_peice_screen_color_input,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 16,
@@ -336,9 +400,8 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
           ),
         ),
         TextFormField(
-          keyboardType: TextInputType.number,
           decoration: InputDecoration(
-            hintText: context.loc.emblem_color_hint,
+            hintText: context.loc.museum_peice_screen_color_hint,
             contentPadding: const EdgeInsets.only(left: 10),
             fillColor: Colors.white,
             filled: true,
@@ -362,7 +425,7 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
           validator: (value) {
             if (value != null) {
               if (!isHexColor(value)) {
-                return context.loc.emblem_color_not_valid;
+                return context.loc.museum_peice_screen_color_not_valid;
               }
             }
             return null;
@@ -375,29 +438,29 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
     );
   }
 
-  Widget quizInput(BuildContext context) {
+  Widget beaconInput(BuildContext context) {
     return Column(
       children: [
         Align(
           alignment: Alignment.topLeft,
           child: Text(
-            context.loc.emblem_quiz_input,
+            context.loc.museum_peice_screen_beacon_input,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 16,
             ),
           ),
         ),
-        DropdownButtonFormField<Quiz?>(
+        DropdownButtonFormField<Beacon?>(
           // value: selectedQuiz,
-          onChanged: (Quiz? newValue) {
+          onChanged: (Beacon? newValue) {
             setState(() {
-              selectedQuiz = newValue;
+              selectedBeacon = newValue;
             });
           },
-          items: quizzesItems,
+          items: beaconItems,
           decoration: InputDecoration(
-            hintText: context.loc.emblem_quiz_hint,
+            hintText: context.loc.museum_peice_screen_beacon_hint,
             contentPadding: const EdgeInsets.only(left: 10),
             fillColor: Colors.white,
             filled: true,
@@ -420,40 +483,65 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
           ),
           validator: (value) {
             if (value == null) {
-              return context.loc.emblem_quiz_not_valid;
+              return context.loc.museum_peice_screen_beacon_not_valid;
             }
             return null;
           },
         ),
-        // MultiSelectBottomSheetField<Quiz?>(
-        //   searchable: false,
-        //   buttonText: Text(
-        //     context.loc.coupon_select_input,
-        //     style: const TextStyle(
-        //       color: Colors.black54,
-        //       fontSize: 16,
-        //       fontWeight: FontWeight.w500,
-        //     ),
-        //   ),
-        //   decoration: BoxDecoration(
-        //     color: Colors.white,
-        //     borderRadius: BorderRadius.circular(3),
-        //   ),
-        //   buttonIcon: const Icon(Icons.search),
-        //   items: quizzesItems,
-        //   listType: MultiSelectListType.CHIP,
-        //   validator: (values) {
-        //     if (values == null || values.isEmpty) {
-        //       return context.loc.create_emblem_quiz_not_valid;
-        //     }
-        //     return null;
-        //   },
-        //   onConfirm: (values) {
-        //     setState(() {
-        //       selectedQuizzes = values;
-        //     });
-        //   },
-        // ),
+      ],
+    );
+  }
+
+  Widget tourInput(BuildContext context) {
+    return Column(
+      children: [
+        Align(
+          alignment: Alignment.topLeft,
+          child: Text(
+            context.loc.museum_peice_screen_tour_input,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+            ),
+          ),
+        ),
+        DropdownButtonFormField<Tour?>(
+          // value: selectedQuiz,
+          onChanged: (Tour? newValue) {
+            setState(() {
+              selectedTour = newValue;
+            });
+          },
+          items: tourItems,
+          decoration: InputDecoration(
+            hintText: context.loc.museum_peice_screen_tour_hint,
+            contentPadding: const EdgeInsets.only(left: 10),
+            fillColor: Colors.white,
+            filled: true,
+            border: const OutlineInputBorder(),
+            errorStyle: const TextStyle(
+              color: Colors.red,
+            ),
+            errorBorder: const OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.red,
+                width: 2,
+              ),
+            ),
+            focusedErrorBorder: const OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.red,
+                width: 2,
+              ),
+            ),
+          ),
+          validator: (value) {
+            if (value == null) {
+              return context.loc.museum_peice_screen_tour_not_valid;
+            }
+            return null;
+          },
+        ),
       ],
     );
   }
@@ -474,34 +562,34 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
           onPressed: () async {
             final navigator = Navigator.of(context);
             FocusManager.instance.primaryFocus?.unfocus();
-            final isValid = emblemCreateKey.currentState!.validate();
+            final isValid = museumPieceCreateKey.currentState!.validate();
 
             if (isValid) {
-              emblemCreateKey.currentState!.save();
-              final variableFromService = await EmblemService().create(
+              museumPieceCreateKey.currentState!.save();
+              final museumPiece = await MuseumPieceService().create(
                 context,
                 title!,
+                subtitle!,
+                description!,
                 image!,
-                minPoints!,
-                maxPoints!,
-                selectedQuiz!,
+                rssi!,
                 color!,
+                selectedBeacon!,
+                selectedTour!,
               );
               widget.onUpdate();
 
               if (context.mounted) {
                 await loadingMessageTime(
-                  title: variableFromService == EnumEmblem.success
-                      ? context.loc.create_emblem_success_title
-                      : context.loc.create_emblem_error_title,
-                  subtitle: variableFromService == EnumEmblem.success
-                      ? context.loc.create_emblem_success_content
-                      : context.loc.create_emblem_error_content,
+                  title: museumPiece == EnumMuseumPiece.success
+                      ? context.loc.create_museum_piece_success_title
+                      : context.loc.create_museum_piece_error_title,
+                  subtitle: museumPiece == EnumMuseumPiece.success
+                      ? context.loc.create_museum_piece_success_content
+                      : context.loc.create_museum_piece_error_content,
                   context: context,
                 );
-                variableFromService == EnumEmblem.success
-                    ? navigator.pop()
-                    : null;
+                museumPiece == EnumMuseumPiece.success ? navigator.pop() : null;
               }
             }
           },

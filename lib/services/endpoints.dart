@@ -52,4 +52,8 @@ class Api {
   Uri user({required String endpoint}) {
     return Uri.parse('${dotenv.get('URL_API')}/user/$endpoint');
   }
+
+  Uri museumPiece({required String endpoint}) {
+    return Uri.parse('${dotenv.get('URL_API')}/piece/$endpoint');
+  }
 }
