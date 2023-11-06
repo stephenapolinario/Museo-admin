@@ -16,27 +16,30 @@ class HomeScreen extends StatelessWidget {
         backgroundColor: mainAppBarColor,
         title: Text(context.loc.home_title.toCapitalizeEveryInitialWord()),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(
-          vertical: 20,
-          horizontal: 16,
-        ),
-        child: GridView.builder(
-          shrinkWrap: true,
-          itemCount: administrationControls.length,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            mainAxisSpacing: 20,
-            crossAxisSpacing: 20,
-            childAspectRatio: 2,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            vertical: 20,
+            horizontal: 16,
           ),
-          itemBuilder: (context, index) {
-            final option = administrationControls[index];
-            return adminControl(
-              option: option,
-              parentContext: parentContext,
-            );
-          },
+          child: GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: administrationControls.length,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              mainAxisSpacing: 20,
+              crossAxisSpacing: 20,
+              childAspectRatio: 2,
+            ),
+            itemBuilder: (context, index) {
+              final option = administrationControls[index];
+              return adminControl(
+                option: option,
+                parentContext: parentContext,
+              );
+            },
+          ),
         ),
       ),
     );

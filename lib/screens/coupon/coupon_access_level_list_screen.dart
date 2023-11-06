@@ -101,80 +101,38 @@ class CouponAccessLevelListScreenState
   }
 
   Widget couponAccessList(List<CouponAccess> couponsAccessList) {
-    return ListView.builder(
-      itemCount: couponsAccessList.length,
-      itemBuilder: (context, index) {
-        final currentCouponAccess = couponsAccessList[index];
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 8),
-          child: ListTile(
-            iconColor: Colors.black,
-            key: ValueKey(currentCouponAccess.id),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            tileColor: mainMenuItemsColor,
-            leading: const Icon(
-              Icons.security,
-              color: Colors.black,
-            ),
-            title: Text(
-              context.loc.coupon_access_list_tile_title,
-              style: const TextStyle(
+    return SingleChildScrollView(
+      child: Column(
+        children: couponsAccessList.map((currentCouponAccess) {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: ListTile(
+              iconColor: Colors.black,
+              key: ValueKey(currentCouponAccess.id),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              tileColor: mainMenuItemsColor,
+              leading: const Icon(
+                Icons.security,
                 color: Colors.black,
               ),
-            ),
-            subtitle: Text(
-              currentCouponAccess.access.toCapitalizeEveryInitialWord(),
-              style: const TextStyle(
-                color: mainItemContentColor,
+              title: Text(
+                context.loc.coupon_access_list_tile_title,
+                style: const TextStyle(
+                  color: Colors.black,
+                ),
+              ),
+              subtitle: Text(
+                currentCouponAccess.access.toCapitalizeEveryInitialWord(),
+                style: const TextStyle(
+                  color: mainItemContentColor,
+                ),
               ),
             ),
-            // trailing: PopupMenuButton(
-            //   itemBuilder: (context) => [
-            //     PopupMenuItem(
-            //       onTap: () {
-            //         // Navigator.of(context).push(
-            //         //   MaterialPageRoute<void>(
-            //         //     builder: (BuildContext context) => BeaconUpdateScreen(
-            //         //       beacon: currentCouponAccess,
-            //         //       onUpdate: () {
-            //         //         fetchData();
-            //         //       },
-            //         //     ),
-            //         //   ),
-            //         // );
-            //       },
-            //       child: Text(context.loc.pop_menu_button_update),
-            //     ),
-            //     PopupMenuItem(
-            //       onTap: () async {
-            //         final wantDelete = await showGenericDialog(
-            //           context: context,
-            //           title: context.loc.beacon_sure_want_delete_title,
-            //           content: context.loc.beacon_sure_want_delete_content,
-            //           optionsBuilder: () => {
-            //             context.loc.sure_want_delete_option_yes: true,
-            //             context.loc.sure_want_delete_option_false: false,
-            //           },
-            //         );
-            //         if (context.mounted && wantDelete) {
-            //           // await BeaconService().delete(context, currentCouponAccess);
-            //           // fetchData();
-            //         }
-            //       },
-            //       child: Text(
-            //         context.loc.pop_menu_button_delete,
-            //         style: const TextStyle(
-            //           color: Colors.red,
-            //         ),
-            //       ),
-            //     ),
-            //   ],
-            // ),
-          ),
-        );
-      },
+          );
+        }).toList(),
+      ),
     );
   }
 }

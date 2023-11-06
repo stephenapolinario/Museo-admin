@@ -15,27 +15,29 @@ class CouponHomeScreen extends StatelessWidget {
         backgroundColor: mainAppBarColor,
         title: Text(context.loc.coupon_home_screen),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(
-          vertical: 20,
-          horizontal: 16,
-        ),
-        child: GridView.builder(
-          shrinkWrap: true,
-          itemCount: couponControls.length,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            mainAxisSpacing: 20,
-            crossAxisSpacing: 20,
-            childAspectRatio: 2,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            vertical: 20,
+            horizontal: 16,
           ),
-          itemBuilder: (context, index) {
-            final option = couponControls[index];
-            return couponControl(
-              option: option,
-              parentContext: parentContext,
-            );
-          },
+          child: GridView.builder(
+            shrinkWrap: true,
+            itemCount: couponControls.length,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              mainAxisSpacing: 20,
+              crossAxisSpacing: 20,
+              childAspectRatio: 2,
+            ),
+            itemBuilder: (context, index) {
+              final option = couponControls[index];
+              return couponControl(
+                option: option,
+                parentContext: parentContext,
+              );
+            },
+          ),
         ),
       ),
     );

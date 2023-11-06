@@ -2,42 +2,42 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:museo_admin_application/constants/colors.dart';
-import 'package:museo_admin_application/extensions/buildcontext/loc.dart';
-import 'package:museo_admin_application/models/admin.dart';
-import 'package:museo_admin_application/screens/admin/admin_create_screen.dart';
-import 'package:museo_admin_application/screens/admin/admin_update_screen.dart';
-import 'package:museo_admin_application/services/admin_service.dart';
+import 'package:museo_admin_application/models/ticket.dart';
+import 'package:museo_admin_application/screens/ticket/ticket_create_screen.dart';
+import 'package:museo_admin_application/screens/ticket/ticket_update_screen.dart';
+import 'package:museo_admin_application/services/ticket_service.dart';
 import 'package:museo_admin_application/utilities/generic_dialog.dart';
+import 'package:museo_admin_application/extensions/buildcontext/loc.dart';
+import 'package:museo_admin_application/constants/colors.dart';
 
-class AdminListScreen extends StatefulWidget {
-  const AdminListScreen({super.key});
+class TicketListScreen extends StatefulWidget {
+  const TicketListScreen({super.key});
 
   @override
-  State<AdminListScreen> createState() => _AdminListScreenState();
+  State<TicketListScreen> createState() => TicketListScreenState();
 }
 
-class _AdminListScreenState extends State<AdminListScreen> {
-  late StreamController<List<ReadAdmin>> _adminStreamController;
-  Stream<List<ReadAdmin>> get onListAdminChanged =>
-      _adminStreamController.stream;
+class TicketListScreenState extends State<TicketListScreen> {
+  late StreamController<List<Ticket>> _ticketStreamController;
+  Stream<List<Ticket>> get onListticketChanged =>
+      _ticketStreamController.stream;
 
   @override
   void initState() {
     super.initState();
-    _adminStreamController = StreamController<List<ReadAdmin>>.broadcast();
+    _ticketStreamController = StreamController<List<Ticket>>.broadcast();
     fetchData();
   }
 
   @override
   void dispose() {
-    _adminStreamController.close();
+    _ticketStreamController.close();
     super.dispose();
   }
 
   void fetchData() async {
-    List<ReadAdmin> admins = await AdminService().readAll(context);
-    _adminStreamController.sink.add(admins);
+    List<Ticket> data = await TicketService().readAll(context);
+    _ticketStreamController.sink.add(data);
   }
 
   @override
@@ -46,20 +46,20 @@ class _AdminListScreenState extends State<AdminListScreen> {
       backgroundColor: mainBackgroundColor,
       appBar: AppBar(
         backgroundColor: mainAppBarColor,
-        title: Text(context.loc.admin_list_title),
+        title: Text(context.loc.ticket_screen_list),
         actions: [
           IconButton(
             icon: const Icon(
-              CupertinoIcons.person_add,
+              Icons.add,
               color: Colors.black,
               size: 35,
             ),
             onPressed: () => {
               Navigator.of(context).push(
                 MaterialPageRoute<void>(
-                  builder: (BuildContext context) => AdminCreateScreen(
+                  builder: (BuildContext context) => TicketCreateScreen(
                     onUpdate: () {
-                      fetchData(); // Call the method to update the stream when the admin is updated.
+                      fetchData();
                     },
                   ),
                 ),
@@ -73,12 +73,12 @@ class _AdminListScreenState extends State<AdminListScreen> {
           vertical: 20,
           horizontal: 16,
         ),
-        child: StreamBuilder<List<ReadAdmin>?>(
-          stream: onListAdminChanged,
+        child: StreamBuilder<List<Ticket>?>(
+          stream: onListticketChanged,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              List<ReadAdmin> adminList = snapshot.data!;
-              return adminsList(adminList);
+              List<Ticket> ticketList = snapshot.data!;
+              return ticketListWidget(ticketList);
             }
 
             return const Center(
@@ -92,32 +92,33 @@ class _AdminListScreenState extends State<AdminListScreen> {
     );
   }
 
-  Widget adminsList(List<ReadAdmin> adminList) {
+  Widget ticketListWidget(List<Ticket> ticketList) {
     return SingleChildScrollView(
       child: Column(
-        children: adminList.map((currentAdmin) {
+        children: ticketList.map((currentTicket) {
           return Padding(
-            padding: const EdgeInsets.only(bottom: 8),
+            padding: const EdgeInsets.only(
+              bottom: 8,
+            ),
             child: ListTile(
               iconColor: Colors.black,
-              key: ValueKey(currentAdmin.id),
+              key: ValueKey(currentTicket.id),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
               tileColor: mainMenuItemsColor,
               leading: const Icon(
-                CupertinoIcons.person_solid,
+                CupertinoIcons.ticket,
                 color: Colors.black,
               ),
               title: Text(
-                //In the future, this can be the user of the administrador (Right now admin only have email and password)
-                context.loc.admin_list_tile_title,
+                context.loc.ticket_item_title,
                 style: const TextStyle(
                   color: Colors.black,
                 ),
               ),
               subtitle: Text(
-                currentAdmin.email,
+                currentTicket.title,
                 style: const TextStyle(
                   color: mainItemContentColor,
                 ),
@@ -128,10 +129,10 @@ class _AdminListScreenState extends State<AdminListScreen> {
                     onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute<void>(
-                          builder: (BuildContext context) => AdminUpdateScreen(
-                            admin: currentAdmin,
+                          builder: (BuildContext context) => TicketUpdateScreen(
+                            ticket: currentTicket,
                             onUpdate: () {
-                              fetchData(); // Call the method to update the stream when the admin is updated.
+                              fetchData();
                             },
                           ),
                         ),
@@ -143,15 +144,15 @@ class _AdminListScreenState extends State<AdminListScreen> {
                     onTap: () async {
                       final wantDelete = await showGenericDialog(
                         context: context,
-                        title: context.loc.admin_sure_want_delete_title,
-                        content: context.loc.admin_sure_want_delete_content,
+                        title: context.loc.ticket_sure_want_delete_title,
+                        content: context.loc.ticket_sure_want_delete_content,
                         optionsBuilder: () => {
                           context.loc.sure_want_delete_option_yes: true,
                           context.loc.sure_want_delete_option_false: false,
                         },
                       );
                       if (context.mounted && wantDelete) {
-                        await AdminService().delete(context, currentAdmin);
+                        await TicketService().delete(context, currentTicket);
                         fetchData();
                       }
                     },

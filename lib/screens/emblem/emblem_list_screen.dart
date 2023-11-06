@@ -97,10 +97,9 @@ class EmblemListScreenState extends State<EmblemListScreen> {
   }
 
   Widget emblemListView(List<Emblem> emblemList) {
-    return ListView.builder(
-      itemCount: emblemList.length,
-      itemBuilder: (context, index) {
-        final currentEmblem = emblemList[index];
+    return SingleChildScrollView(
+      child: Column(
+          children: emblemList.map((currentEmblem) {
         return Padding(
           padding: const EdgeInsets.only(bottom: 8),
           child: ListTile(
@@ -170,7 +169,7 @@ class EmblemListScreenState extends State<EmblemListScreen> {
             ),
           ),
         );
-      },
+      }).toList()),
     );
   }
 }

@@ -93,80 +93,80 @@ class CouponListScreenState extends State<CouponListScreen> {
   }
 
   Widget couponList(List<Coupon> couponList) {
-    return ListView.builder(
-      itemCount: couponList.length,
-      itemBuilder: (context, index) {
-        final currentCoupon = couponList[index];
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 8),
-          child: ListTile(
-            iconColor: Colors.black,
-            key: ValueKey(currentCoupon.id),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            tileColor: mainMenuItemsColor,
-            leading: const Icon(
-              CupertinoIcons.ticket,
-              color: Colors.black,
-            ),
-            title: Text(
-              context.loc.coupon_list_tile_title,
-              style: const TextStyle(
+    return SingleChildScrollView(
+      child: Column(
+        children: couponList.map((currentCoupon) {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: ListTile(
+              iconColor: Colors.black,
+              key: ValueKey(currentCoupon.id),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              tileColor: mainMenuItemsColor,
+              leading: const Icon(
+                CupertinoIcons.ticket,
                 color: Colors.black,
               ),
-            ),
-            subtitle: Text(
-              currentCoupon.code,
-              style: const TextStyle(
-                color: mainItemContentColor,
-              ),
-            ),
-            trailing: PopupMenuButton(
-              itemBuilder: (context) => [
-                PopupMenuItem(
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute<void>(
-                        builder: (BuildContext context) => CouponUpdateScreen(
-                          coupon: currentCoupon,
-                          onUpdate: () {
-                            fetchData();
-                          },
-                        ),
-                      ),
-                    );
-                  },
-                  child: Text(context.loc.pop_menu_button_update),
+              title: Text(
+                context.loc.coupon_list_tile_title,
+                style: const TextStyle(
+                  color: Colors.black,
                 ),
-                PopupMenuItem(
-                  onTap: () async {
-                    final wantDelete = await showGenericDialog(
-                      context: context,
-                      title: context.loc.coupon_sure_want_delete_title,
-                      content: context.loc.coupon_sure_want_delete_content,
-                      optionsBuilder: () => {
-                        context.loc.sure_want_delete_option_yes: true,
-                        context.loc.sure_want_delete_option_false: false,
-                      },
-                    );
-                    if (context.mounted && wantDelete) {
-                      await CouponService().delete(context, currentCoupon);
-                      fetchData();
-                    }
-                  },
-                  child: Text(
-                    context.loc.pop_menu_button_delete,
-                    style: const TextStyle(
-                      color: Colors.red,
+              ),
+              subtitle: Text(
+                currentCoupon.code,
+                style: const TextStyle(
+                  color: mainItemContentColor,
+                ),
+              ),
+              trailing: PopupMenuButton(
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (BuildContext context) => CouponUpdateScreen(
+                            coupon: currentCoupon,
+                            onUpdate: () {
+                              fetchData();
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                    child: Text(context.loc.pop_menu_button_update),
+                  ),
+                  PopupMenuItem(
+                    onTap: () async {
+                      final wantDelete = await showGenericDialog(
+                        context: context,
+                        title: context.loc.coupon_sure_want_delete_title,
+                        content: context.loc.coupon_sure_want_delete_content,
+                        optionsBuilder: () => {
+                          context.loc.sure_want_delete_option_yes: true,
+                          context.loc.sure_want_delete_option_false: false,
+                        },
+                      );
+                      if (context.mounted && wantDelete) {
+                        await CouponService().delete(context, currentCoupon);
+                        fetchData();
+                      }
+                    },
+                    child: Text(
+                      context.loc.pop_menu_button_delete,
+                      style: const TextStyle(
+                        color: Colors.red,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        );
-      },
+          );
+        }).toList(),
+      ),
     );
   }
 }

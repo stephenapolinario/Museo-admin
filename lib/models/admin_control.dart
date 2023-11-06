@@ -89,7 +89,9 @@ final adminControlQuiz = AdminControl(
 final adminControlTicket = AdminControl(
   name: 'Ingressos',
   icon: CupertinoIcons.tickets,
-  onTouch: (BuildContext context) {},
+  onTouch: (BuildContext context) {
+    Navigator.of(context).pushNamed(ticket);
+  },
 );
 
 final adminControlTour = AdminControl(

@@ -94,80 +94,80 @@ class BeaconListScreenState extends State<BeaconListScreen> {
   }
 
   Widget beaconsList(List<Beacon> beaconList) {
-    return ListView.builder(
-      itemCount: beaconList.length,
-      itemBuilder: (context, index) {
-        final currentBeacon = beaconList[index];
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 8),
-          child: ListTile(
-            iconColor: Colors.black,
-            key: ValueKey(currentBeacon.id),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            tileColor: mainMenuItemsColor,
-            leading: const Icon(
-              Icons.bluetooth,
-              color: Colors.black,
-            ),
-            title: Text(
-              context.loc.beacon_list_tile_title,
-              style: const TextStyle(
+    return SingleChildScrollView(
+      child: Column(
+        children: beaconList.map((currentBeacon) {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: ListTile(
+              iconColor: Colors.black,
+              key: ValueKey(currentBeacon.id),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              tileColor: mainMenuItemsColor,
+              leading: const Icon(
+                Icons.bluetooth,
                 color: Colors.black,
               ),
-            ),
-            subtitle: Text(
-              currentBeacon.name,
-              style: const TextStyle(
-                color: mainItemContentColor,
-              ),
-            ),
-            trailing: PopupMenuButton(
-              itemBuilder: (context) => [
-                PopupMenuItem(
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute<void>(
-                        builder: (BuildContext context) => BeaconUpdateScreen(
-                          beacon: currentBeacon,
-                          onUpdate: () {
-                            fetchData();
-                          },
-                        ),
-                      ),
-                    );
-                  },
-                  child: Text(context.loc.pop_menu_button_update),
+              title: Text(
+                context.loc.beacon_list_tile_title,
+                style: const TextStyle(
+                  color: Colors.black,
                 ),
-                PopupMenuItem(
-                  onTap: () async {
-                    final wantDelete = await showGenericDialog(
-                      context: context,
-                      title: context.loc.beacon_sure_want_delete_title,
-                      content: context.loc.beacon_sure_want_delete_content,
-                      optionsBuilder: () => {
-                        context.loc.sure_want_delete_option_yes: true,
-                        context.loc.sure_want_delete_option_false: false,
-                      },
-                    );
-                    if (context.mounted && wantDelete) {
-                      await BeaconService().delete(context, currentBeacon);
-                      fetchData();
-                    }
-                  },
-                  child: Text(
-                    context.loc.pop_menu_button_delete,
-                    style: const TextStyle(
-                      color: Colors.red,
+              ),
+              subtitle: Text(
+                currentBeacon.name,
+                style: const TextStyle(
+                  color: mainItemContentColor,
+                ),
+              ),
+              trailing: PopupMenuButton(
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (BuildContext context) => BeaconUpdateScreen(
+                            beacon: currentBeacon,
+                            onUpdate: () {
+                              fetchData();
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                    child: Text(context.loc.pop_menu_button_update),
+                  ),
+                  PopupMenuItem(
+                    onTap: () async {
+                      final wantDelete = await showGenericDialog(
+                        context: context,
+                        title: context.loc.beacon_sure_want_delete_title,
+                        content: context.loc.beacon_sure_want_delete_content,
+                        optionsBuilder: () => {
+                          context.loc.sure_want_delete_option_yes: true,
+                          context.loc.sure_want_delete_option_false: false,
+                        },
+                      );
+                      if (context.mounted && wantDelete) {
+                        await BeaconService().delete(context, currentBeacon);
+                        fetchData();
+                      }
+                    },
+                    child: Text(
+                      context.loc.pop_menu_button_delete,
+                      style: const TextStyle(
+                        color: Colors.red,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        );
-      },
+          );
+        }).toList(),
+      ),
     );
   }
 }
