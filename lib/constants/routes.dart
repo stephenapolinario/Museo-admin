@@ -24,7 +24,9 @@ const museumInformation = '/museumInformation';
 const museumPiece = '/museumPiece';
 
 // Products
+const homeProducts = '/homeProducts';
 const products = '/products';
+const productsCategory = '/products/category';
 
 // Quizzes
 const quiz = '/quiz';

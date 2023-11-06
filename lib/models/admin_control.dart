@@ -74,10 +74,12 @@ final adminControlMuseumPiece = AdminControl(
 
 // final adminControlProductCategory = AdminControls(name: 'product category');
 
-final adminControlProduct = AdminControl(
-  name: 'Produtos',
+final adminControlStore = AdminControl(
+  name: 'Lojinha',
   icon: Icons.shopify_outlined,
-  onTouch: (BuildContext context) {},
+  onTouch: (BuildContext context) {
+    Navigator.of(context).pushNamed(homeProducts);
+  },
 );
 
 final adminControlQuiz = AdminControl(
@@ -139,7 +141,7 @@ final List<AdminControl> administrationControls = [
   adminControlEmblem,
   adminControlMuseumInformation,
   adminControlMuseumPiece,
-  adminControlProduct,
+  adminControlStore,
   adminControlQuiz,
   adminControlTicket,
   adminControlTour,

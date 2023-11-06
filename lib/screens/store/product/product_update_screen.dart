@@ -1,36 +1,39 @@
 import 'package:flutter/material.dart';
-import 'package:museo_admin_application/constants/colors.dart';
-import 'package:museo_admin_application/extensions/buildcontext/loc.dart';
 import 'package:museo_admin_application/helpers/loading_complete.dart';
-import 'package:museo_admin_application/models/quiz.dart';
-import 'package:museo_admin_application/services/emblem_service.dart';
-import 'package:museo_admin_application/services/quiz_service.dart';
+import 'package:museo_admin_application/extensions/buildcontext/loc.dart';
+import 'package:museo_admin_application/constants/colors.dart';
+import 'package:museo_admin_application/models/store/product.dart';
+import 'package:museo_admin_application/models/store/product_category.dart';
+import 'package:museo_admin_application/services/store/product_category_service.dart';
+import 'package:museo_admin_application/services/store/product_service.dart';
 import 'package:museo_admin_application/utilities/check_regex_color.dart';
+import 'package:museo_admin_application/utilities/check_url.dart';
 
-class EmblemCreateScreen extends StatefulWidget {
+class ProductUpdateScreen extends StatefulWidget {
+  final Product product;
   final Function onUpdate;
 
-  const EmblemCreateScreen({
+  const ProductUpdateScreen({
     super.key,
+    required this.product,
     required this.onUpdate,
   });
 
   @override
-  State<EmblemCreateScreen> createState() => _EmblemCreateScreenState();
+  State<ProductUpdateScreen> createState() => _ProductUpdateScreenState();
 }
 
-class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
-  final emblemCreateKey = GlobalKey<FormState>();
-
-  late List<Quiz> quizzes;
-  late String? title, image, color;
-  late Quiz? selectedQuiz;
-  late int? minPoints, maxPoints;
+class _ProductUpdateScreenState extends State<ProductUpdateScreen> {
+  final productUpdateKey = GlobalKey<FormState>();
+  late String? name, description, image, size, color;
+  late double? price;
+  late List<ProductCategory> productCategories;
 
   // To prevent reload
   late Future<void> fetchDataFuture;
 
-  late List<DropdownMenuItem<Quiz>> quizzesItems;
+  late List<DropdownMenuItem<ProductCategory>> productCategoryItems;
+  late ProductCategory? selectedProductCategory;
 
   @override
   void initState() {
@@ -39,15 +42,19 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
   }
 
   Future<void> fetchData() async {
-    quizzes = await QuizService().readAll(context);
-
+    productCategories = await ProductCategoryService().readAll(context);
     if (context.mounted) {
-      quizzesItems = quizzes.map<DropdownMenuItem<Quiz>>((Quiz value) {
-        return DropdownMenuItem<Quiz>(
+      productCategoryItems = productCategories
+          .map<DropdownMenuItem<ProductCategory>>((ProductCategory value) {
+        return DropdownMenuItem<ProductCategory>(
           value: value,
-          child: Text(value.title), // Display the appropriate value
+          child: Text(value.name),
         );
       }).toList();
+
+      selectedProductCategory = productCategories.firstWhere(
+        (category) => category.id == widget.product.category.id,
+      );
     }
   }
 
@@ -57,7 +64,7 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
       backgroundColor: mainBackgroundColor,
       appBar: AppBar(
         backgroundColor: mainAppBarColor,
-        title: Text(context.loc.create_emblem_screen_title),
+        title: Text(context.loc.update_product_screen_title),
       ),
       body: FutureBuilder(
         future: fetchDataFuture,
@@ -92,36 +99,38 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
 
   Widget fields(BuildContext context) {
     return Form(
-      key: emblemCreateKey,
+      key: productUpdateKey,
       autovalidateMode: AutovalidateMode.always,
       child: ListView(
         physics: const NeverScrollableScrollPhysics(),
         shrinkWrap: true,
         padding: const EdgeInsets.all(16),
         children: [
-          titleInput(context),
+          nameInput(context),
+          const SizedBox(height: 15),
+          descriptionInput(context),
           const SizedBox(height: 15),
           imageInput(context),
           const SizedBox(height: 15),
-          minPointsInput(context),
+          priceInput(context),
           const SizedBox(height: 15),
-          maxPointsInput(context),
+          sizeInput(context),
           const SizedBox(height: 15),
           colorInput(context),
           const SizedBox(height: 15),
-          quizInput(context),
+          productCategoryInput(context),
         ],
       ),
     );
   }
 
-  Widget titleInput(BuildContext context) {
+  Widget nameInput(BuildContext context) {
     return Column(
       children: [
         Align(
           alignment: Alignment.topLeft,
           child: Text(
-            context.loc.emblem_title_input,
+            context.loc.product_screen_name_input,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 16,
@@ -129,8 +138,9 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
           ),
         ),
         TextFormField(
+          initialValue: widget.product.name,
           decoration: InputDecoration(
-            hintText: context.loc.create_emblem_title_hint,
+            hintText: context.loc.product_screen_name_hint,
             contentPadding: const EdgeInsets.only(left: 10),
             fillColor: Colors.white,
             filled: true,
@@ -153,12 +163,63 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
           ),
           validator: (value) {
             if (value == null || value == '') {
-              return context.loc.emblem_title_not_valid;
+              return context.loc.product_screen_name_valid_error;
             }
             return null;
           },
           onSaved: (newValue) => setState(() {
-            title = newValue;
+            name = newValue;
+          }),
+        ),
+      ],
+    );
+  }
+
+  Widget descriptionInput(BuildContext context) {
+    return Column(
+      children: [
+        Align(
+          alignment: Alignment.topLeft,
+          child: Text(
+            context.loc.product_screen_description_input,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+            ),
+          ),
+        ),
+        TextFormField(
+          initialValue: widget.product.description,
+          decoration: InputDecoration(
+            hintText: context.loc.product_screen_description_hint,
+            contentPadding: const EdgeInsets.only(left: 10),
+            fillColor: Colors.white,
+            filled: true,
+            border: const OutlineInputBorder(),
+            errorStyle: const TextStyle(
+              color: Colors.red,
+            ),
+            errorBorder: const OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.red,
+                // width: 2,
+              ),
+            ),
+            focusedErrorBorder: const OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.red,
+                width: 2,
+              ),
+            ),
+          ),
+          validator: (value) {
+            if (value == null || value == '') {
+              return context.loc.product_screen_description_valid_error;
+            }
+            return null;
+          },
+          onSaved: (newValue) => setState(() {
+            description = newValue;
           }),
         ),
       ],
@@ -171,7 +232,7 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
         Align(
           alignment: Alignment.topLeft,
           child: Text(
-            context.loc.emblem_image_input,
+            context.loc.product_screen_image_input,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 16,
@@ -179,8 +240,9 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
           ),
         ),
         TextFormField(
+          initialValue: widget.product.image,
           decoration: InputDecoration(
-            hintText: context.loc.emblem_image_hint,
+            hintText: context.loc.product_screen_image_hint,
             contentPadding: const EdgeInsets.only(left: 10),
             fillColor: Colors.white,
             filled: true,
@@ -202,11 +264,8 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
             ),
           ),
           validator: (value) {
-            if (value != null) {
-              bool validURL = Uri.tryParse(value)?.hasAbsolutePath ?? false;
-              if (!validURL) {
-                return context.loc.emblem_image_not_valid;
-              }
+            if (value == null || value == '' || !isUrl(value)) {
+              return context.loc.product_screen_image_valid_error;
             }
             return null;
           },
@@ -218,13 +277,13 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
     );
   }
 
-  Widget minPointsInput(BuildContext context) {
+  Widget priceInput(BuildContext context) {
     return Column(
       children: [
         Align(
           alignment: Alignment.topLeft,
           child: Text(
-            context.loc.emblem_minpoints_input,
+            context.loc.product_screen_price_input,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 16,
@@ -232,9 +291,9 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
           ),
         ),
         TextFormField(
-          keyboardType: TextInputType.number,
+          initialValue: widget.product.price.toString(),
           decoration: InputDecoration(
-            hintText: context.loc.emblem_minpoints_hint,
+            hintText: context.loc.product_screen_price_hint,
             contentPadding: const EdgeInsets.only(left: 10),
             fillColor: Colors.white,
             filled: true,
@@ -256,27 +315,31 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
             ),
           ),
           validator: (value) {
-            final n = num.tryParse(value!);
-            if (n == null || n < 0 || n > 100) {
-              return context.loc.emblem_minpoints_not_valid;
+            if (value == null || value == '') {
+              try {
+                double.parse(value!);
+              } catch (e) {
+                return context.loc.product_screen_price_valid_error;
+              }
+              return context.loc.product_screen_price_valid_error;
             }
             return null;
           },
           onSaved: (newValue) => setState(() {
-            minPoints = int.tryParse(newValue!);
+            price = double.tryParse(newValue!);
           }),
         ),
       ],
     );
   }
 
-  Widget maxPointsInput(BuildContext context) {
+  Widget sizeInput(BuildContext context) {
     return Column(
       children: [
         Align(
           alignment: Alignment.topLeft,
           child: Text(
-            context.loc.emblem_maxpoints_input,
+            context.loc.product_screen_size_input,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 16,
@@ -284,9 +347,9 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
           ),
         ),
         TextFormField(
-          keyboardType: TextInputType.number,
+          initialValue: widget.product.size,
           decoration: InputDecoration(
-            hintText: context.loc.emblem_maxpoints_hint,
+            hintText: context.loc.product_screen_size_hint,
             contentPadding: const EdgeInsets.only(left: 10),
             fillColor: Colors.white,
             filled: true,
@@ -308,14 +371,13 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
             ),
           ),
           validator: (value) {
-            final n = num.tryParse(value!);
-            if (n == null || n < 0 || n > 100) {
-              return context.loc.emblem_maxpoints_not_valid;
+            if (value == null || value == '') {
+              return context.loc.product_screen_size_valid_error;
             }
             return null;
           },
           onSaved: (newValue) => setState(() {
-            maxPoints = int.tryParse(newValue!);
+            size = newValue;
           }),
         ),
       ],
@@ -328,7 +390,7 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
         Align(
           alignment: Alignment.topLeft,
           child: Text(
-            context.loc.emblem_color_input,
+            context.loc.product_screen_color_input,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 16,
@@ -336,9 +398,9 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
           ),
         ),
         TextFormField(
-          keyboardType: TextInputType.number,
+          initialValue: widget.product.color,
           decoration: InputDecoration(
-            hintText: context.loc.emblem_color_hint,
+            hintText: context.loc.product_screen_color_hint,
             contentPadding: const EdgeInsets.only(left: 10),
             fillColor: Colors.white,
             filled: true,
@@ -360,10 +422,8 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
             ),
           ),
           validator: (value) {
-            if (value != null) {
-              if (!isHexColor(value)) {
-                return context.loc.emblem_color_not_valid;
-              }
+            if (value == null || value == '' || !isHexColor(value)) {
+              return context.loc.product_screen_color_valid_error;
             }
             return null;
           },
@@ -375,29 +435,29 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
     );
   }
 
-  Widget quizInput(BuildContext context) {
+  Widget productCategoryInput(BuildContext context) {
     return Column(
       children: [
         Align(
           alignment: Alignment.topLeft,
           child: Text(
-            context.loc.emblem_quiz_input,
+            context.loc.product_screen_category_input,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 16,
             ),
           ),
         ),
-        DropdownButtonFormField<Quiz?>(
-          // value: selectedQuiz,
-          onChanged: (Quiz? newValue) {
+        DropdownButtonFormField<ProductCategory?>(
+          value: selectedProductCategory,
+          onChanged: (ProductCategory? newValue) {
             setState(() {
-              selectedQuiz = newValue;
+              selectedProductCategory = newValue;
             });
           },
-          items: quizzesItems,
+          items: productCategoryItems,
           decoration: InputDecoration(
-            hintText: context.loc.emblem_quiz_hint,
+            hintText: context.loc.product_screen_category_hint,
             contentPadding: const EdgeInsets.only(left: 10),
             fillColor: Colors.white,
             filled: true,
@@ -420,11 +480,11 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
           ),
           validator: (value) {
             if (value == null) {
-              return context.loc.emblem_quiz_not_valid;
+              return context.loc.product_screen_category_valid_error;
             }
             return null;
           },
-        ),
+        )
       ],
     );
   }
@@ -436,7 +496,7 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
         const SizedBox(height: 20),
         TextButton(
           child: Text(
-            context.loc.create_button,
+            context.loc.update_button,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 18,
@@ -445,34 +505,34 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
           onPressed: () async {
             final navigator = Navigator.of(context);
             FocusManager.instance.primaryFocus?.unfocus();
-            final isValid = emblemCreateKey.currentState!.validate();
+            final isValid = productUpdateKey.currentState!.validate();
 
             if (isValid) {
-              emblemCreateKey.currentState!.save();
-              final variableFromService = await EmblemService().create(
+              productUpdateKey.currentState!.save();
+              final object = await ProductService().update(
                 context,
-                title!,
+                widget.product,
+                name!,
+                description!,
                 image!,
-                minPoints!,
-                maxPoints!,
-                selectedQuiz!,
+                size!,
+                price!,
                 color!,
+                selectedProductCategory!,
               );
               widget.onUpdate();
 
               if (context.mounted) {
                 await loadingMessageTime(
-                  title: variableFromService == EnumEmblem.success
-                      ? context.loc.create_emblem_success_title
-                      : context.loc.create_emblem_error_title,
-                  subtitle: variableFromService == EnumEmblem.success
-                      ? context.loc.create_emblem_success_content
-                      : context.loc.create_emblem_error_content,
+                  title: object == EnumProduct.success
+                      ? context.loc.update_product_success_content
+                      : context.loc.update_product_error_content,
+                  subtitle: object == EnumProduct.success
+                      ? context.loc.update_product_success_title
+                      : context.loc.update_product_error_title,
                   context: context,
                 );
-                variableFromService == EnumEmblem.success
-                    ? navigator.pop()
-                    : null;
+                object == EnumProduct.success ? navigator.pop() : null;
               }
             }
           },

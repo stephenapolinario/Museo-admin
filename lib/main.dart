@@ -13,6 +13,9 @@ import 'package:museo_admin_application/screens/home_screen.dart';
 import 'package:museo_admin_application/screens/login_screen.dart';
 import 'package:museo_admin_application/providers/admin.dart';
 import 'package:museo_admin_application/screens/museumPiece/museum_piece_list_screen.dart';
+import 'package:museo_admin_application/screens/store/category/product_category_list_screen.dart';
+import 'package:museo_admin_application/screens/store/product/product_list_screen.dart';
+import 'package:museo_admin_application/screens/store/store_home_screen.dart';
 import 'package:museo_admin_application/screens/ticket/ticket_list_screen.dart';
 import 'package:museo_admin_application/screens/tour/tour_list_screen.dart';
 import 'package:museo_admin_application/screens/user/user_list_screen.dart';
@@ -59,6 +62,9 @@ class MyApp extends StatelessWidget {
         museumPiece: (context) => const MuseumPieceListScreen(),
         user: (context) => const UserListScreen(),
         ticket: (context) => const TicketListScreen(),
+        homeProducts: (context) => const StoreHomeScreen(),
+        products: (context) => const ProductListScreen(),
+        productsCategory: (context) => const ProductCategoryListScreen(),
       },
     );
   }
