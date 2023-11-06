@@ -3,6 +3,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:museo_admin_application/constants/colors.dart';
 import 'package:museo_admin_application/extensions/buildcontext/loc.dart';
 import 'package:museo_admin_application/extensions/string.dart';
 import 'package:museo_admin_application/models/coupon/coupon_access.dart';
@@ -45,11 +46,11 @@ class CouponAccessLevelListScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.primary,
+      backgroundColor: mainBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: mainAppBarColor,
         title: Text(
-          context.loc.coupon_access_list_title,
+          context.loc.coupon_access_list_title.toCapitalize(),
           style: const TextStyle(
             fontSize: 20,
           ),
@@ -110,12 +111,11 @@ class CouponAccessLevelListScreenState
             iconColor: Colors.black,
             key: ValueKey(currentCouponAccess.id),
             shape: RoundedRectangleBorder(
-              side: const BorderSide(color: Colors.black, width: 1),
-              borderRadius: BorderRadius.circular(5),
+              borderRadius: BorderRadius.circular(10),
             ),
-            tileColor: Colors.cyan.shade800,
+            tileColor: mainMenuItemsColor,
             leading: const Icon(
-              Icons.bluetooth,
+              Icons.security,
               color: Colors.black,
             ),
             title: Text(
@@ -127,7 +127,7 @@ class CouponAccessLevelListScreenState
             subtitle: Text(
               currentCouponAccess.access.toCapitalize(),
               style: const TextStyle(
-                color: Colors.white,
+                color: mainItemContentColor,
               ),
             ),
             // trailing: PopupMenuButton(

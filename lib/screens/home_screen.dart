@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:museo_admin_application/constants/colors.dart';
 import 'package:museo_admin_application/extensions/buildcontext/loc.dart';
+import 'package:museo_admin_application/extensions/string.dart';
 import 'package:museo_admin_application/models/admin_control.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -9,10 +11,10 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final parentContext = context; // Store the context of HomeScreen
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.primary,
+      backgroundColor: mainBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(context.loc.home_title),
+        backgroundColor: mainAppBarColor,
+        title: Text(context.loc.home_title.toCapitalize()),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(
@@ -47,8 +49,11 @@ class HomeScreen extends StatelessWidget {
     return InkWell(
       onTap: () => option.onTouch(parentContext),
       child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: mainMenuItemsColor,
+        ),
         padding: const EdgeInsets.all(8),
-        color: Colors.cyan.shade800,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

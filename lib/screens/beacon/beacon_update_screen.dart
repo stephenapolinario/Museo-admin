@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:museo_admin_application/constants/colors.dart';
 import 'package:museo_admin_application/extensions/buildcontext/loc.dart';
+import 'package:museo_admin_application/extensions/string.dart';
 import 'package:museo_admin_application/helpers/loading_complete.dart';
 import 'package:museo_admin_application/models/beacon.dart';
 import 'package:museo_admin_application/services/beacon_service.dart';
@@ -25,10 +27,10 @@ class _BeaconUpdateScreenState extends State<BeaconUpdateScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.primary,
+      backgroundColor: mainBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(context.loc.beacon_update_screen_title),
+        backgroundColor: mainAppBarColor,
+        title: Text(context.loc.beacon_update_screen_title.toCapitalize()),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(

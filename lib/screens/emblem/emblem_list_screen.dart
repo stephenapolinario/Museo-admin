@@ -1,43 +1,46 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:museo_admin_application/constants/colors.dart';
 import 'package:museo_admin_application/extensions/buildcontext/loc.dart';
-import 'package:museo_admin_application/models/admin.dart';
-import 'package:museo_admin_application/screens/admin/admin_create_screen.dart';
-import 'package:museo_admin_application/screens/admin/admin_update_screen.dart';
-import 'package:museo_admin_application/services/admin_service.dart';
+import 'package:museo_admin_application/extensions/string.dart';
+import 'package:museo_admin_application/models/emblem.dart';
+import 'package:museo_admin_application/screens/emblem/emblem_create_screen.dart';
+import 'package:museo_admin_application/screens/emblem/emblem_update_screen.dart';
+import 'package:museo_admin_application/services/emblem_service.dart';
 import 'package:museo_admin_application/utilities/generic_dialog.dart';
 
-class AdminListScreen extends StatefulWidget {
-  const AdminListScreen({super.key});
+// TODO: 1. Create a search by quiz/tour
+// TODO: 2. Create an image upload to the emblem instead of using URL for the image.
+
+class EmblemListScreen extends StatefulWidget {
+  const EmblemListScreen({super.key});
 
   @override
-  State<AdminListScreen> createState() => _AdminListScreenState();
+  State<EmblemListScreen> createState() => EmblemListScreenState();
 }
 
-class _AdminListScreenState extends State<AdminListScreen> {
-  late StreamController<List<ReadAdmin>> _adminStreamController;
-  Stream<List<ReadAdmin>> get onListAdminChanged =>
-      _adminStreamController.stream;
+class EmblemListScreenState extends State<EmblemListScreen> {
+  late StreamController<List<Emblem>> _emblemStreamController;
+  Stream<List<Emblem>> get onListemblemChanged =>
+      _emblemStreamController.stream;
 
   @override
   void initState() {
     super.initState();
-    _adminStreamController = StreamController<List<ReadAdmin>>.broadcast();
+    _emblemStreamController = StreamController<List<Emblem>>.broadcast();
     fetchData();
   }
 
   @override
   void dispose() {
-    _adminStreamController.close();
+    _emblemStreamController.close();
     super.dispose();
   }
 
   void fetchData() async {
-    List<ReadAdmin> admins = await AdminService().readAll(context);
-    _adminStreamController.sink.add(admins);
+    List<Emblem> data = await EmblemService().readAll(context);
+    _emblemStreamController.sink.add(data);
   }
 
   @override
@@ -46,20 +49,20 @@ class _AdminListScreenState extends State<AdminListScreen> {
       backgroundColor: mainBackgroundColor,
       appBar: AppBar(
         backgroundColor: mainAppBarColor,
-        title: Text(context.loc.admin_list_title),
+        title: Text(context.loc.emblem_list_screen_title.toCapitalize()),
         actions: [
           IconButton(
             icon: const Icon(
-              CupertinoIcons.person_add,
+              Icons.add,
               color: Colors.black,
               size: 35,
             ),
             onPressed: () => {
               Navigator.of(context).push(
                 MaterialPageRoute<void>(
-                  builder: (BuildContext context) => AdminCreateScreen(
+                  builder: (BuildContext context) => EmblemCreateScreen(
                     onUpdate: () {
-                      fetchData(); // Call the method to update the stream when the admin is updated.
+                      fetchData();
                     },
                   ),
                 ),
@@ -73,12 +76,12 @@ class _AdminListScreenState extends State<AdminListScreen> {
           vertical: 20,
           horizontal: 16,
         ),
-        child: StreamBuilder<List<ReadAdmin>?>(
-          stream: onListAdminChanged,
+        child: StreamBuilder<List<Emblem>?>(
+          stream: onListemblemChanged,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              List<ReadAdmin> adminList = snapshot.data!;
-              return adminsList(adminList);
+              List<Emblem> emblemList = snapshot.data!;
+              return emblemListView(emblemList);
             }
 
             return const Center(
@@ -92,33 +95,32 @@ class _AdminListScreenState extends State<AdminListScreen> {
     );
   }
 
-  Widget adminsList(List<ReadAdmin> adminList) {
+  Widget emblemListView(List<Emblem> emblemList) {
     return ListView.builder(
-      itemCount: adminList.length,
+      itemCount: emblemList.length,
       itemBuilder: (context, index) {
-        final currentAdmin = adminList[index];
+        final currentEmblem = emblemList[index];
         return Padding(
           padding: const EdgeInsets.only(bottom: 8),
           child: ListTile(
             iconColor: Colors.black,
-            key: ValueKey(currentAdmin.id),
+            key: ValueKey(currentEmblem.id),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
             ),
             tileColor: mainMenuItemsColor,
             leading: const Icon(
-              CupertinoIcons.person_solid,
+              Icons.type_specimen,
               color: Colors.black,
             ),
             title: Text(
-              //In the future, this can be the user of the administrador (Right now admin only have email and password)
-              context.loc.admin_list_tile_title,
+              currentEmblem.title,
               style: const TextStyle(
                 color: Colors.black,
               ),
             ),
             subtitle: Text(
-              currentAdmin.email,
+              currentEmblem.quiz.title,
               style: const TextStyle(
                 color: mainItemContentColor,
               ),
@@ -129,10 +131,10 @@ class _AdminListScreenState extends State<AdminListScreen> {
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute<void>(
-                        builder: (BuildContext context) => AdminUpdateScreen(
-                          admin: currentAdmin,
+                        builder: (BuildContext context) => EmblemUpdateScreen(
+                          emblem: currentEmblem,
                           onUpdate: () {
-                            fetchData(); // Call the method to update the stream when the admin is updated.
+                            fetchData();
                           },
                         ),
                       ),
@@ -144,15 +146,15 @@ class _AdminListScreenState extends State<AdminListScreen> {
                   onTap: () async {
                     final wantDelete = await showGenericDialog(
                       context: context,
-                      title: context.loc.admin_sure_want_delete_title,
-                      content: context.loc.admin_sure_want_delete_content,
+                      title: context.loc.emblem_sure_want_delete_title,
+                      content: context.loc.emblem_sure_want_delete_content,
                       optionsBuilder: () => {
                         context.loc.sure_want_delete_option_yes: true,
                         context.loc.sure_want_delete_option_false: false,
                       },
                     );
                     if (context.mounted && wantDelete) {
-                      await AdminService().delete(context, currentAdmin);
+                      await EmblemService().delete(context, currentEmblem);
                       fetchData();
                     }
                   },

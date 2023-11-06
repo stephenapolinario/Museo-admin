@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:museo_admin_application/constants/colors.dart';
 import 'package:museo_admin_application/extensions/buildcontext/loc.dart';
 import 'package:museo_admin_application/models/beacon.dart';
 import 'package:museo_admin_application/screens/beacon/beacon_create_screen.dart';
@@ -43,9 +44,9 @@ class BeaconListScreenState extends State<BeaconListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.primary,
+      backgroundColor: mainBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: mainAppBarColor,
         title: Text(context.loc.beacon_list_screen_title),
         actions: [
           IconButton(
@@ -103,10 +104,9 @@ class BeaconListScreenState extends State<BeaconListScreen> {
             iconColor: Colors.black,
             key: ValueKey(currentBeacon.id),
             shape: RoundedRectangleBorder(
-              side: const BorderSide(color: Colors.black, width: 1),
-              borderRadius: BorderRadius.circular(5),
+              borderRadius: BorderRadius.circular(10),
             ),
-            tileColor: Colors.cyan.shade800,
+            tileColor: mainMenuItemsColor,
             leading: const Icon(
               Icons.bluetooth,
               color: Colors.black,
@@ -120,7 +120,7 @@ class BeaconListScreenState extends State<BeaconListScreen> {
             subtitle: Text(
               currentBeacon.name,
               style: const TextStyle(
-                color: Colors.white,
+                color: mainItemContentColor,
               ),
             ),
             trailing: PopupMenuButton(

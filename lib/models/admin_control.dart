@@ -53,7 +53,9 @@ final adminControlCoupon = AdminControl(
 final adminControlEmblem = AdminControl(
   name: 'Emblemas',
   icon: Icons.badge,
-  onTouch: (BuildContext context) {},
+  onTouch: (BuildContext context) {
+    Navigator.of(context).pushNamed(emblem);
+  },
 );
 
 final adminControlMuseumInformation = AdminControl(

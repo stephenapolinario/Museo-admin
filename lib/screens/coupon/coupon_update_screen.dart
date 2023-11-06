@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:multi_select_flutter/bottom_sheet/multi_select_bottom_sheet_field.dart';
 import 'package:multi_select_flutter/util/multi_select_item.dart';
 import 'package:multi_select_flutter/util/multi_select_list_type.dart';
+import 'package:museo_admin_application/constants/colors.dart';
 import 'package:museo_admin_application/extensions/buildcontext/loc.dart';
 import 'package:museo_admin_application/extensions/string.dart';
 import 'package:museo_admin_application/helpers/loading_complete.dart';
@@ -100,9 +101,9 @@ class _CouponUpdateScreenState extends State<CouponUpdateScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.primary,
+      backgroundColor: mainBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: mainAppBarColor,
         title: Text(context.loc.update_coupon_title),
       ),
       body: FutureBuilder(
