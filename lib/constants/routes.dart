@@ -18,7 +18,10 @@ const couponType = '/coupon/type';
 const emblem = '/emblem';
 
 // Museum Information
-const museumInformation = '/museumInformation';
+const homeMuseumInformation = '/museumInformation';
+const museumAddress = '/museumInformation/address';
+const museumPhone = '/museumInformation/phone';
+const museumEmail = '/museumInformation/email';
 
 // Museum Pieces
 const museumPiece = '/museumPiece';

@@ -66,7 +66,7 @@ class LoadingScreen {
                   children: [
                     Image.asset(
                       Assets.logos.moviBigPng.path,
-                      height: size.height * 0.12,
+                      height: 90,
                     ),
                     const SizedBox(height: 20.0),
                     Column(

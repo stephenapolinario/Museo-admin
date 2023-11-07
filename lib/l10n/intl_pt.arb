@@ -1,6 +1,7 @@
 {  
 	"@_GENERALS": {},
 	"create_button": "Criar",
+	"add_button": "Adicionar",
 	"update_button": "Atualizar",
 
 	"@_LOGIN_SCREEN": {},
@@ -353,6 +354,75 @@
 	"update_product_category_success_content": "Categoria atualizada!\nRedirecionando...",
 	"update_product_category_error_content": "Ocorreu algum erro ao atualizar a categoria...",
 	
+	"@_MUSEUM_INFORMATION_SCREEN": {},
+	"museum_information_home_screen": "Informações do museu",
+	
+	"@_MUSEUM_INFORMATION_ADDRESS_DEFAULT_SCREEN": {},
+	"museum_information_address_screen_country_input": "País",
+	"museum_information_address_screen_country_hint": "Brazil",
+	"museum_information_address_screen_country_valid_error": "Por favor, escolha o país do museu",
+	"museum_information_address_screen_estate_input": "Estado",
+	"museum_information_address_screen_estate_hint": "Santa Catarina",
+	"museum_information_address_screen_estate_valid_error": "Por favor, escolha o estado do museu",
+
+	"@_MUSEUM_INFORMATION_ADDRESS_UPDATE_SCREEN": {},
+	"update_museum_information_address_screen_title": "Atualizar endereço",
+	"update_museum_information_address_success_title": "Sucesso",
+	"update_museum_information_address_error_title": "Erro",
+	"update_museum_information_address_success_content": "Endereço atualizado!\nRedirecionando...",
+	"update_museum_information_address_error_content": "Ocorreu algum erro ao atualizar o endereço...",
+
+	"@_MUSEUM_INFORMATION_PHONE_LIST_SCREEN": {},
+	"museum_information_phone_screen_title": "Telefones",
+	"museum_information_phone_screen_tile":"Telefone", 
+	"museum_information_phone_sure_want_delete_title": "Você tem certeza que quer deletar esse telefone?",
+	"museum_information_phone_sure_want_delete_content": "Após o telefone ser deletado, não será possível recuperar o mesmo!\nFique atento, pois poderá ocasionar erros!",
+
+	"@_MUSEUM_INFORMATION_PHONE_DEFAULT_SCREEN": {},
+	"museum_information_phone_screen_phone_input": "Telefone",
+	"museum_information_phone_screen_phone_hint": "(47) 9 9999-9999",
+	"museum_information_phone_screen_phone_valid_error": "Por favor, digite um número de telefone válido",
+
+	"@_MUSEUM_INFORMATION_PHONE_CREATE_SCREEN": {},
+	"create_museum_information_phone_screen_title": "Adicionar telefone",
+	"create_museum_information_phone_success_title": "Sucesso",
+	"create_museum_information_phone_error_title": "Erro",
+	"create_museum_information_phone_success_content": "Telefone adicionado!\nRedirecionando...",
+	"create_museum_information_phone_error_content": "Ocorreu algum erro ao adicionar o telefone...",
+	
+	"@_MUSEUM_INFORMATION_PHONE_UPDATE_SCREEN": {},
+	"update_museum_information_phone_screen_title": "Atualizar telefone",
+	"update_museum_information_phone_success_title": "Sucesso",
+	"update_museum_information_phone_error_title": "Erro",
+	"update_museum_information_phone_success_content": "Telefone atualizado!\nRedirecionando...",
+	"update_museum_information_phone_error_content": "Ocorreu algum erro ao atualizar o telefone...",
+	
+	"@_MUSEUM_INFORMATION_EMAIL_LIST_SCREEN": {},
+	"museum_information_email_screen_title": "Emails cadastrados",
+	"museum_information_email_screen_tile":"Email", 
+	"museum_information_email_sure_want_delete_title": "Você tem certeza que quer deletar esse email?",
+	"museum_information_email_sure_want_delete_content": "Após o email ser deletado, não será possível recuperar o mesmo!\nFique atento, pois poderá ocasionar erros!",
+
+	"@_MUSEUM_INFORMATION_EMAIL_DEFAULT_SCREEN": {},
+	"museum_information_email_screen_email_input": "Email",
+	"museum_information_email_screen_email_hint": "email@movi.com",
+	"museum_information_email_screen_email_valid_error": "Por favor, digite um email válido",
+
+	"@_MUSEUM_INFORMATION_EMAIL_CREATE_SCREEN": {},
+	"create_museum_information_email_screen_title": "Adicionar email",
+	"create_museum_information_email_success_title": "Sucesso",
+	"create_museum_information_email_error_title": "Erro",
+	"create_museum_information_email_success_content": "Email adicionado!\nRedirecionando...",
+	"create_museum_information_email_error_content": "Ocorreu algum erro ao adicionar o email...",
+	
+	"@_MUSEUM_INFORMATION_EMAIL_UPDATE_SCREEN": {},
+	"update_museum_information_email_screen_title": "Atualizar email",
+	"update_museum_information_email_success_title": "Sucesso",
+	"update_museum_information_email_error_title": "Erro",
+	"update_museum_information_email_success_content": "Email atualizado!\nRedirecionando...",
+	"update_museum_information_email_error_content": "Ocorreu algum erro ao atualizar o email...",
+
+
 	"@_JUST_TO_MAKE_THE_LASTONE_WITHOUT_COMMA": {},
     "under_construction": "Under construction..."
 }

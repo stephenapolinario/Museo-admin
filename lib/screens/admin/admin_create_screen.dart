@@ -190,8 +190,8 @@ class _AdminCreateScreenState extends State<AdminCreateScreen> {
               adminCreateKey.currentState!.save();
               final createAdmin = await AdminService().create(
                 context,
-                password!,
                 email!,
+                password!,
               );
               widget.onUpdate();
 

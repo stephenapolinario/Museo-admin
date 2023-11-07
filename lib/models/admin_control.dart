@@ -38,8 +38,6 @@ final adminControlBeacon = AdminControl(
   },
 );
 
-// final adminControlCouponAccess = AdminControls(name: 'coupon access');
-
 final adminControlCoupon = AdminControl(
   name: 'Cupoms',
   icon: Icons.discount,
@@ -47,8 +45,6 @@ final adminControlCoupon = AdminControl(
     Navigator.of(context).pushNamed(couponHome);
   },
 );
-
-// final adminControlCouponType = AdminControls(name: 'coupon type');
 
 final adminControlEmblem = AdminControl(
   name: 'Emblemas',
@@ -61,7 +57,9 @@ final adminControlEmblem = AdminControl(
 final adminControlMuseumInformation = AdminControl(
   name: 'Informações do museu',
   icon: Icons.info,
-  onTouch: (BuildContext context) {},
+  onTouch: (BuildContext context) {
+    Navigator.of(context).pushNamed(homeMuseumInformation);
+  },
 );
 
 final adminControlMuseumPiece = AdminControl(
@@ -71,8 +69,6 @@ final adminControlMuseumPiece = AdminControl(
     Navigator.of(context).pushNamed(museumPiece);
   },
 );
-
-// final adminControlProductCategory = AdminControls(name: 'product category');
 
 final adminControlStore = AdminControl(
   name: 'Lojinha',
@@ -85,7 +81,9 @@ final adminControlStore = AdminControl(
 final adminControlQuiz = AdminControl(
   name: 'Quizzes',
   icon: Icons.quiz,
-  onTouch: (BuildContext context) {},
+  onTouch: (BuildContext context) {
+    Navigator.of(context).pushNamed(quiz);
+  },
 );
 
 final adminControlTicket = AdminControl(
@@ -118,7 +116,6 @@ final adminLogout = AdminControl(
   iconColor: Colors.red,
   textColor: Colors.red,
   onTouch: (BuildContext context) async {
-    // Added BuildContext as parameter
     final navigator = Navigator.of(context);
     final adminProvider = Provider.of<AdminProvider>(context, listen: false);
     adminProvider.logout();
@@ -133,7 +130,6 @@ final adminLogout = AdminControl(
   },
 );
 
-// Missing the commented sections
 final List<AdminControl> administrationControls = [
   adminControlAdmin,
   adminControlBeacon,
