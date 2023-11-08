@@ -60,7 +60,7 @@
 
 	"@_GENERAL_BEACON_SCREEN": {},
 	"beacon_screen_input_name": "Nome",
-	"beacon_screen_input_uuid": "UUID",
+	"beacon_screen_input_uuid": "MAC",
 	"beacon_screen_uuid_hint": "A1:B2:34:C5:67:DE",
 
 	"@_BEACON_LIST_SCREEN": {},
@@ -74,12 +74,12 @@
 	"beacon_create_screen_title": "Criar beacon",
 	"create_beacon_screen_name_not_valid": "Por favor, de um nome ao beacon",
 	"create_beacon_name_hint": "Beacon do rei",
-	"create_beacon_uuid_not_in_pattern": "Esse UUUID está em um formato incorreto",
+	"create_beacon_uuid_not_in_pattern": "Esse MAC está em um formato incorreto",
 	"beacon_created_successful_title": "Sucesso",
 	"beacon_created_successful_subtitle": "Beacon criado!\nRedirecionando...",
 	"beacon_create_error_title": "Oops",
 	"beacon_create_error_subtitle": "Houve um erro...\nTente novamente",
-	"beacon_already_exists": "Esse UUID já existe\nForneça outro por favor",
+	"beacon_already_exists": "Esse MAC já existe\nForneça outro por favor",
 
 	"@_BEACON_UPDATE_SCREEN": {},
 	"beacon_update_screen_title": "Atualizar beacon",
