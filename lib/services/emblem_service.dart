@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:museo_admin_application/models/emblem.dart';
-import 'package:museo_admin_application/models/quiz.dart';
+import 'package:museo_admin_application/models/quiz/quiz.dart';
 import 'package:museo_admin_application/services/admin_service.dart';
 import 'package:museo_admin_application/services/endpoints.dart';
 

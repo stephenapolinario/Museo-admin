@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:museo_admin_application/constants/routes.dart';
+import 'package:museo_admin_application/providers/quiz.dart';
 import 'package:museo_admin_application/screens/coupon/coupon_access_level_list_screen.dart';
 import 'package:museo_admin_application/screens/coupon/coupon_home_screen.dart';
 import 'package:museo_admin_application/screens/admin/admin_list_screen.dart';
@@ -17,6 +18,9 @@ import 'package:museo_admin_application/screens/museumInformation/email/museum_e
 import 'package:museo_admin_application/screens/museumInformation/museum_information_home_screen.dart';
 import 'package:museo_admin_application/screens/museumInformation/phone/museum_phone_list_screen.dart';
 import 'package:museo_admin_application/screens/museumPiece/museum_piece_list_screen.dart';
+import 'package:museo_admin_application/screens/quiz/quiz_create_information_screen.dart';
+import 'package:museo_admin_application/screens/quiz/quiz_create_question_screen.dart';
+import 'package:museo_admin_application/screens/quiz/quiz_list_screen.dart';
 import 'package:museo_admin_application/screens/store/category/product_category_list_screen.dart';
 import 'package:museo_admin_application/screens/store/product/product_list_screen.dart';
 import 'package:museo_admin_application/screens/store/store_home_screen.dart';
@@ -31,6 +35,7 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AdminProvider()),
+        ChangeNotifierProvider(create: (_) => QuizProvider()),
       ],
       child: const MyApp(),
     ),
@@ -73,7 +78,11 @@ class MyApp extends StatelessWidget {
         museumAddress: (context) => const MuseumAddress(),
         museumPhone: (context) => const MuseumPhoneListScreen(),
         museumEmail: (context) => const MuseumEmailListScreen(),
-        quiz: (context) => const ProductCategoryListScreen(),
+        quiz: (context) => const QuisListScreen(),
+        quizCreateInformation: (context) => const QuizCreateInformationScreen(),
+        quizCreateQuestions: (context) => const QuizCreateQuestionScreen(),
+        quizUpdateInformation: (context) => const QuizCreateInformationScreen(),
+        quizUpdateQuestions: (context) => const QuizCreateQuestionScreen(),
       },
     );
   }

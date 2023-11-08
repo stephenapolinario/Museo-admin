@@ -4,7 +4,7 @@ import 'package:museo_admin_application/extensions/buildcontext/loc.dart';
 import 'package:museo_admin_application/extensions/string.dart';
 import 'package:museo_admin_application/helpers/loading_complete.dart';
 import 'package:museo_admin_application/models/emblem.dart';
-import 'package:museo_admin_application/models/quiz.dart';
+import 'package:museo_admin_application/models/quiz/quiz.dart';
 import 'package:museo_admin_application/services/emblem_service.dart';
 import 'package:museo_admin_application/services/quiz_service.dart';
 

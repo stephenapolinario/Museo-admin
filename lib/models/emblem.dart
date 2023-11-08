@@ -1,4 +1,4 @@
-import 'package:museo_admin_application/models/quiz.dart';
+import 'package:museo_admin_application/models/quiz/quiz.dart';
 
 class Emblem {
   String id, title, image, color;

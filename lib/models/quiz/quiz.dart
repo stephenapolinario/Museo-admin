@@ -1,11 +1,17 @@
+import 'package:museo_admin_application/models/beacon.dart';
+import 'package:museo_admin_application/models/tour.dart';
+
 class Quiz {
-  final String id, title, beaconUUID, color;
+  final String id, title, color;
   final int rssi;
   final List<Question> questions;
+  final Beacon beacon;
+  final Tour tour;
 
   Quiz({
     required this.id,
-    required this.beaconUUID,
+    required this.beacon,
+    required this.tour,
     required this.rssi,
     required this.title,
     required this.questions,
@@ -13,10 +19,13 @@ class Quiz {
   });
 
   factory Quiz.fromJson(Map<String, dynamic> json) {
+    final beacon = Beacon.fromJson(json['beacon']);
+    final tour = Tour.fromJson(json['tour']);
     return Quiz(
       id: json['_id'],
       title: json['title'],
-      beaconUUID: json['beacon'],
+      beacon: beacon,
+      tour: tour,
       rssi: json['rssi'],
       color: json['color'],
       questions: List<Question>.from(
@@ -26,18 +35,18 @@ class Quiz {
 }
 
 class Question {
-  final String text, color;
-  final List<Option> options;
+  late String question, color;
+  late List<Option> options;
 
   Question({
-    required this.text,
+    required this.question,
     required this.options,
     required this.color,
   });
 
   factory Question.fromJson(Map<String, dynamic> json) {
     return Question(
-      text: json['text'],
+      question: json['text'],
       color: json['color'],
       options: List<Option>.from(
           json['options'].map((option) => Option.fromJson(option))),
@@ -46,17 +55,17 @@ class Question {
 }
 
 class Option {
-  final String awnser;
-  final bool isCorrect;
+  late String answer;
+  late bool isCorrect;
 
   Option({
-    required this.awnser,
+    required this.answer,
     required this.isCorrect,
   });
 
   factory Option.fromJson(Map<String, dynamic> json) {
     return Option(
-      awnser: json['answer'],
+      answer: json['answer'],
       isCorrect: json['isCorrect'],
     );
   }

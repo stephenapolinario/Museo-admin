@@ -33,6 +33,10 @@ const productsCategory = '/products/category';
 
 // Quizzes
 const quiz = '/quiz';
+const quizCreateInformation = '/quiz/create/information';
+const quizCreateQuestions = '/quiz/create/Questions';
+const quizUpdateInformation = '/quiz/update/information';
+const quizUpdateQuestions = '/quiz/update/Questions';
 
 // Tickets
 const ticket = '/ticket';

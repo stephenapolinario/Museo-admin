@@ -1,36 +1,41 @@
 import 'package:flutter/material.dart';
-import 'package:museo_admin_application/constants/colors.dart';
 import 'package:museo_admin_application/extensions/buildcontext/loc.dart';
+import 'package:museo_admin_application/constants/colors.dart';
 import 'package:museo_admin_application/helpers/loading_complete.dart';
-import 'package:museo_admin_application/models/quiz/quiz.dart';
-import 'package:museo_admin_application/services/emblem_service.dart';
-import 'package:museo_admin_application/services/quiz_service.dart';
+import 'package:museo_admin_application/models/beacon.dart';
+import 'package:museo_admin_application/models/tour.dart';
+import 'package:museo_admin_application/providers/quiz.dart';
+import 'package:museo_admin_application/services/beacon_service.dart';
+import 'package:museo_admin_application/services/tour_service.dart';
 import 'package:museo_admin_application/utilities/check_regex_color.dart';
+import 'package:provider/provider.dart';
 
-class EmblemCreateScreen extends StatefulWidget {
-  final Function onUpdate;
-
-  const EmblemCreateScreen({
+class QuizCreateInformationScreen extends StatefulWidget {
+  const QuizCreateInformationScreen({
     super.key,
-    required this.onUpdate,
   });
 
   @override
-  State<EmblemCreateScreen> createState() => _EmblemCreateScreenState();
+  State<QuizCreateInformationScreen> createState() =>
+      _QuizCreateInformationScreenState();
 }
 
-class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
-  final emblemCreateKey = GlobalKey<FormState>();
+class _QuizCreateInformationScreenState
+    extends State<QuizCreateInformationScreen> {
+  final quizInformationCreateKey = GlobalKey<FormState>();
+  late String? title, color;
+  late double? rssi;
+  late QuizProvider quizProvider;
 
-  late List<Quiz> quizzes;
-  late String? title, image, color;
-  late Quiz? selectedQuiz;
-  late int? minPoints, maxPoints;
+  late List<Tour> tourList;
+  late List<Beacon> beaconList;
+  late List<DropdownMenuItem<Tour>> tourItems;
+  late List<DropdownMenuItem<Beacon>> beaconItems;
+  late Tour? selectedTour;
+  late Beacon? selectedBeacon;
 
   // To prevent reload
   late Future<void> fetchDataFuture;
-
-  late List<DropdownMenuItem<Quiz>> quizzesItems;
 
   @override
   void initState() {
@@ -39,25 +44,53 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
   }
 
   Future<void> fetchData() async {
-    quizzes = await QuizService().readAll(context);
+    tourList = await TourService().readAll(context);
 
     if (context.mounted) {
-      quizzesItems = quizzes.map<DropdownMenuItem<Quiz>>((Quiz value) {
-        return DropdownMenuItem<Quiz>(
+      beaconList = await BeaconService().readAll(context);
+
+      tourItems = tourList.map<DropdownMenuItem<Tour>>((Tour value) {
+        return DropdownMenuItem<Tour>(
           value: value,
-          child: Text(value.title), // Display the appropriate value
+          child: Text(value.title),
         );
       }).toList();
+
+      beaconItems = beaconList.map<DropdownMenuItem<Beacon>>((Beacon value) {
+        return DropdownMenuItem<Beacon>(
+          value: value,
+          child: Text(value.name),
+        );
+      }).toList();
+
+      selectedBeacon = quizProvider.beacon != null
+          ? beaconList.firstWhere(
+              (beacon) => beacon.id == quizProvider.beacon!.id,
+            )
+          : null;
+
+      selectedTour = quizProvider.tour != null
+          ? tourList.firstWhere(
+              (tour) => tour.id == quizProvider.tour!.id,
+            )
+          : null;
     }
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    quizProvider = Provider.of<QuizProvider>(context, listen: true);
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final parentContext = context;
     return Scaffold(
       backgroundColor: mainBackgroundColor,
       appBar: AppBar(
         backgroundColor: mainAppBarColor,
-        title: Text(context.loc.create_emblem_screen_title),
+        title: Text(context.loc.create_quiz_information_screen_title),
       ),
       body: FutureBuilder(
         future: fetchDataFuture,
@@ -73,7 +106,7 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
                   child: Column(
                     children: [
                       fields(context),
-                      enterButton(context),
+                      enterButton(parentContext),
                     ],
                   ),
                 ),
@@ -92,7 +125,7 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
 
   Widget fields(BuildContext context) {
     return Form(
-      key: emblemCreateKey,
+      key: quizInformationCreateKey,
       autovalidateMode: AutovalidateMode.always,
       child: ListView(
         physics: const NeverScrollableScrollPhysics(),
@@ -101,15 +134,13 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
         children: [
           titleInput(context),
           const SizedBox(height: 15),
-          imageInput(context),
-          const SizedBox(height: 15),
-          minPointsInput(context),
-          const SizedBox(height: 15),
-          maxPointsInput(context),
+          rssiInput(context),
           const SizedBox(height: 15),
           colorInput(context),
           const SizedBox(height: 15),
-          quizInput(context),
+          tourInput(context),
+          const SizedBox(height: 15),
+          beaconInput(context),
         ],
       ),
     );
@@ -121,7 +152,7 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
         Align(
           alignment: Alignment.topLeft,
           child: Text(
-            context.loc.emblem_title_input,
+            context.loc.quiz_screen_title_input,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 16,
@@ -129,8 +160,9 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
           ),
         ),
         TextFormField(
+          initialValue: quizProvider.title,
           decoration: InputDecoration(
-            hintText: context.loc.create_emblem_title_hint,
+            hintText: context.loc.quiz_screen_title_hint,
             contentPadding: const EdgeInsets.only(left: 10),
             fillColor: Colors.white,
             filled: true,
@@ -153,7 +185,7 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
           ),
           validator: (value) {
             if (value == null || value == '') {
-              return context.loc.emblem_title_not_valid;
+              return context.loc.quiz_screen_title_valid_error;
             }
             return null;
           },
@@ -165,13 +197,13 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
     );
   }
 
-  Widget imageInput(BuildContext context) {
+  Widget rssiInput(BuildContext context) {
     return Column(
       children: [
         Align(
           alignment: Alignment.topLeft,
           child: Text(
-            context.loc.emblem_image_input,
+            context.loc.quiz_screen_rssi_input,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 16,
@@ -179,8 +211,9 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
           ),
         ),
         TextFormField(
+          initialValue: quizProvider.rssi?.toString(),
           decoration: InputDecoration(
-            hintText: context.loc.emblem_image_hint,
+            hintText: context.loc.quiz_screen_rssi_hint,
             contentPadding: const EdgeInsets.only(left: 10),
             fillColor: Colors.white,
             filled: true,
@@ -191,7 +224,7 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
             errorBorder: const OutlineInputBorder(
               borderSide: BorderSide(
                 color: Colors.red,
-                // width: 2,
+                width: 2,
               ),
             ),
             focusedErrorBorder: const OutlineInputBorder(
@@ -202,120 +235,13 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
             ),
           ),
           validator: (value) {
-            if (value != null) {
-              bool validURL = Uri.tryParse(value)?.hasAbsolutePath ?? false;
-              if (!validURL) {
-                return context.loc.emblem_image_not_valid;
-              }
+            if (value == null || value == '') {
+              return context.loc.quiz_screen_rssi_valid_error;
             }
             return null;
           },
           onSaved: (newValue) => setState(() {
-            image = newValue;
-          }),
-        ),
-      ],
-    );
-  }
-
-  Widget minPointsInput(BuildContext context) {
-    return Column(
-      children: [
-        Align(
-          alignment: Alignment.topLeft,
-          child: Text(
-            context.loc.emblem_minpoints_input,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-            ),
-          ),
-        ),
-        TextFormField(
-          keyboardType: TextInputType.number,
-          decoration: InputDecoration(
-            hintText: context.loc.emblem_minpoints_hint,
-            contentPadding: const EdgeInsets.only(left: 10),
-            fillColor: Colors.white,
-            filled: true,
-            border: const OutlineInputBorder(),
-            errorStyle: const TextStyle(
-              color: Colors.red,
-            ),
-            errorBorder: const OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.red,
-                // width: 2,
-              ),
-            ),
-            focusedErrorBorder: const OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.red,
-                width: 2,
-              ),
-            ),
-          ),
-          validator: (value) {
-            final n = num.tryParse(value!);
-            if (n == null || n < 0 || n > 100) {
-              return context.loc.emblem_minpoints_not_valid;
-            }
-            return null;
-          },
-          onSaved: (newValue) => setState(() {
-            minPoints = int.tryParse(newValue!);
-          }),
-        ),
-      ],
-    );
-  }
-
-  Widget maxPointsInput(BuildContext context) {
-    return Column(
-      children: [
-        Align(
-          alignment: Alignment.topLeft,
-          child: Text(
-            context.loc.emblem_maxpoints_input,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-            ),
-          ),
-        ),
-        TextFormField(
-          keyboardType: TextInputType.number,
-          decoration: InputDecoration(
-            hintText: context.loc.emblem_maxpoints_hint,
-            contentPadding: const EdgeInsets.only(left: 10),
-            fillColor: Colors.white,
-            filled: true,
-            border: const OutlineInputBorder(),
-            errorStyle: const TextStyle(
-              color: Colors.red,
-            ),
-            errorBorder: const OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.red,
-                // width: 2,
-              ),
-            ),
-            focusedErrorBorder: const OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.red,
-                width: 2,
-              ),
-            ),
-          ),
-          validator: (value) {
-            final n = num.tryParse(value!);
-            if (n == null || n < 0 || n > 100) {
-              return context.loc.emblem_maxpoints_not_valid;
-            }
-            return null;
-          },
-          onSaved: (newValue) => setState(() {
-            maxPoints = int.tryParse(newValue!);
+            rssi = double.tryParse(newValue!);
           }),
         ),
       ],
@@ -328,7 +254,7 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
         Align(
           alignment: Alignment.topLeft,
           child: Text(
-            context.loc.emblem_color_input,
+            context.loc.quiz_screen_color_input,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 16,
@@ -336,9 +262,9 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
           ),
         ),
         TextFormField(
-          keyboardType: TextInputType.number,
+          initialValue: quizProvider.color,
           decoration: InputDecoration(
-            hintText: context.loc.emblem_color_hint,
+            hintText: context.loc.quiz_screen_color_hint,
             contentPadding: const EdgeInsets.only(left: 10),
             fillColor: Colors.white,
             filled: true,
@@ -349,7 +275,7 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
             errorBorder: const OutlineInputBorder(
               borderSide: BorderSide(
                 color: Colors.red,
-                // width: 2,
+                width: 2,
               ),
             ),
             focusedErrorBorder: const OutlineInputBorder(
@@ -362,9 +288,10 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
           validator: (value) {
             if (value != null) {
               if (!isHexColor(value)) {
-                return context.loc.emblem_color_not_valid;
+                return context.loc.quiz_screen_color_valid_error;
               }
             }
+
             return null;
           },
           onSaved: (newValue) => setState(() {
@@ -375,29 +302,71 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
     );
   }
 
-  Widget quizInput(BuildContext context) {
+  Widget enterButton(BuildContext context) {
+    return Column(
+      children: [
+        // Enter
+        const SizedBox(height: 20),
+        TextButton(
+          child: Text(
+            context.loc.save_button,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+            ),
+          ),
+          onPressed: () async {
+            final navigator = Navigator.of(context);
+            FocusManager.instance.primaryFocus?.unfocus();
+            final isValid = quizInformationCreateKey.currentState!.validate();
+
+            if (isValid) {
+              quizInformationCreateKey.currentState!.save();
+              quizProvider.saveBasicInformation(
+                newTitle: title!,
+                newColor: color!,
+                newRssi: rssi!,
+                newBeacon: selectedBeacon!,
+                newTour: selectedTour!,
+              );
+
+              await loadingMessageTime(
+                title: context.loc.create_quiz_information_success_title,
+                subtitle: context.loc.create_quiz_information_success_content,
+                context: context,
+              );
+
+              navigator.pop();
+            }
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget tourInput(BuildContext context) {
     return Column(
       children: [
         Align(
           alignment: Alignment.topLeft,
           child: Text(
-            context.loc.emblem_quiz_input,
+            context.loc.quiz_screen_tour_input,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 16,
             ),
           ),
         ),
-        DropdownButtonFormField<Quiz?>(
-          // value: selectedQuiz,
-          onChanged: (Quiz? newValue) {
+        DropdownButtonFormField<Tour?>(
+          value: selectedTour,
+          onChanged: (Tour? newValue) {
             setState(() {
-              selectedQuiz = newValue;
+              selectedTour = newValue;
             });
           },
-          items: quizzesItems,
+          items: tourItems,
           decoration: InputDecoration(
-            hintText: context.loc.emblem_quiz_hint,
+            hintText: context.loc.quiz_screen_tour_hint,
             contentPadding: const EdgeInsets.only(left: 10),
             fillColor: Colors.white,
             filled: true,
@@ -420,7 +389,7 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
           ),
           validator: (value) {
             if (value == null) {
-              return context.loc.emblem_quiz_not_valid;
+              return context.loc.quiz_screen_tour_valid_error;
             }
             return null;
           },
@@ -429,52 +398,54 @@ class _EmblemCreateScreenState extends State<EmblemCreateScreen> {
     );
   }
 
-  Widget enterButton(BuildContext context) {
+  Widget beaconInput(BuildContext context) {
     return Column(
       children: [
-        // Enter
-        const SizedBox(height: 20),
-        TextButton(
+        Align(
+          alignment: Alignment.topLeft,
           child: Text(
-            context.loc.create_button,
+            context.loc.quiz_screen_beacon_input,
             style: const TextStyle(
               color: Colors.white,
-              fontSize: 18,
+              fontSize: 16,
             ),
           ),
-          onPressed: () async {
-            final navigator = Navigator.of(context);
-            FocusManager.instance.primaryFocus?.unfocus();
-            final isValid = emblemCreateKey.currentState!.validate();
-
-            if (isValid) {
-              emblemCreateKey.currentState!.save();
-              final variableFromService = await EmblemService().create(
-                context,
-                title!,
-                image!,
-                minPoints!,
-                maxPoints!,
-                selectedQuiz!,
-                color!,
-              );
-              widget.onUpdate();
-
-              if (context.mounted) {
-                await loadingMessageTime(
-                  title: variableFromService == EnumEmblem.success
-                      ? context.loc.create_emblem_success_title
-                      : context.loc.create_emblem_error_title,
-                  subtitle: variableFromService == EnumEmblem.success
-                      ? context.loc.create_emblem_success_content
-                      : context.loc.create_emblem_error_content,
-                  context: context,
-                );
-                variableFromService == EnumEmblem.success
-                    ? navigator.pop()
-                    : null;
-              }
+        ),
+        DropdownButtonFormField<Beacon?>(
+          value: selectedBeacon,
+          onChanged: (Beacon? newValue) {
+            setState(() {
+              selectedBeacon = newValue;
+            });
+          },
+          items: beaconItems,
+          decoration: InputDecoration(
+            hintText: context.loc.quiz_screen_beacon_hint,
+            contentPadding: const EdgeInsets.only(left: 10),
+            fillColor: Colors.white,
+            filled: true,
+            border: const OutlineInputBorder(),
+            errorStyle: const TextStyle(
+              color: Colors.red,
+            ),
+            errorBorder: const OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.red,
+                width: 2,
+              ),
+            ),
+            focusedErrorBorder: const OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.red,
+                width: 2,
+              ),
+            ),
+          ),
+          validator: (value) {
+            if (value == null) {
+              return context.loc.quiz_screen_beacon_valid_error;
             }
+            return null;
           },
         ),
       ],
