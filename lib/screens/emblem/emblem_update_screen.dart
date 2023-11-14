@@ -447,7 +447,7 @@ class _EmblemUpdateScreenState extends State<EmblemUpdateScreen> {
         const SizedBox(height: 20),
         TextButton(
           child: Text(
-            context.loc.create_button,
+            context.loc.update_button,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 18,

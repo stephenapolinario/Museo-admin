@@ -1,14 +1,29 @@
 import 'dart:async';
 
+import 'package:async/async.dart';
+
 import 'package:flutter/material.dart';
 import 'package:museo_admin_application/extensions/string.dart';
+import 'package:museo_admin_application/models/emblem.dart';
 import 'package:museo_admin_application/models/quiz/quiz.dart';
 import 'package:museo_admin_application/screens/quiz/quiz_create_home_screen.dart';
 import 'package:museo_admin_application/screens/quiz/quiz_update_home_screen.dart';
+import 'package:museo_admin_application/services/emblem_service.dart';
 import 'package:museo_admin_application/services/quiz_service.dart';
+import 'package:museo_admin_application/utilities/check_quiz_emblems.dart';
 import 'package:museo_admin_application/utilities/generic_dialog.dart';
 import 'package:museo_admin_application/extensions/buildcontext/loc.dart';
 import 'package:museo_admin_application/constants/colors.dart';
+
+class CommonData {
+  List<Quiz> quizzes;
+  List<Emblem> emblems;
+
+  CommonData({
+    required this.quizzes,
+    required this.emblems,
+  });
+}
 
 class QuisListScreen extends StatefulWidget {
   const QuisListScreen({super.key});
@@ -18,21 +33,25 @@ class QuisListScreen extends StatefulWidget {
 }
 
 class QuisListScreenState extends State<QuisListScreen> {
-  late Quiz quiz;
-
   late StreamController<List<Quiz>> _quizStreamController;
   Stream<List<Quiz>> get onListQuizChanged => _quizStreamController.stream;
+
+  late StreamController<List<Emblem>> _emblemStreamController;
+  Stream<List<Emblem>> get onListemblemChanged =>
+      _emblemStreamController.stream;
 
   @override
   void initState() {
     super.initState();
     _quizStreamController = StreamController<List<Quiz>>.broadcast();
+    _emblemStreamController = StreamController<List<Emblem>>.broadcast();
     fetchData();
   }
 
   @override
   void dispose() {
     _quizStreamController.close();
+    _emblemStreamController.close();
     super.dispose();
   }
 
@@ -43,8 +62,13 @@ class QuisListScreenState extends State<QuisListScreen> {
   }
 
   void fetchData() async {
-    List<Quiz> data = await QuizService().readAll(context);
-    _quizStreamController.sink.add(data);
+    List<Quiz> quizzes = await QuizService().readAll(context);
+    _quizStreamController.sink.add(quizzes);
+
+    if (context.mounted) {
+      List<Emblem> emblems = await EmblemService().readAll(context);
+      _emblemStreamController.sink.add(emblems);
+    }
   }
 
   @override
@@ -80,18 +104,36 @@ class QuisListScreenState extends State<QuisListScreen> {
           vertical: 20,
           horizontal: 16,
         ),
-        child: StreamBuilder<List<Quiz>?>(
+        child: StreamBuilder<List<Quiz>>(
           stream: onListQuizChanged,
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              List<Quiz> quizList = snapshot.data!;
-              return quizListWidget(quizList);
+          builder: (context, quizSnapshot) {
+            if (!quizSnapshot.hasData) {
+              return const Center(
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                ),
+              );
             }
 
-            return const Center(
-              child: CircularProgressIndicator(
-                color: Colors.white,
-              ),
+            List<Quiz> quizzes = quizSnapshot.data ?? [];
+
+            return StreamBuilder<List<Emblem>>(
+              stream: onListemblemChanged,
+              builder: (context, emblemSnapshot) {
+                if (!emblemSnapshot.hasData) {
+                  return const Center(
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                    ),
+                  );
+                }
+
+                List<Emblem> emblems = emblemSnapshot.data ?? [];
+                CommonData commonData =
+                    CommonData(quizzes: quizzes, emblems: emblems);
+
+                return quizListWidget(commonData.quizzes, commonData.emblems);
+              },
             );
           },
         ),
@@ -99,10 +141,15 @@ class QuisListScreenState extends State<QuisListScreen> {
     );
   }
 
-  Widget quizListWidget(List<Quiz> quizList) {
+  Widget quizListWidget(List<Quiz> quizList, List<Emblem> emblemList) {
     return SingleChildScrollView(
       child: Column(
         children: quizList.map((currentQuiz) {
+          List<Emblem> matchingEmblems = emblemList.where((emblem) {
+            return currentQuiz.id == emblem.quiz?.id;
+          }).toList();
+
+          bool emblemsCoverPoints = checkEmblemRanges(matchingEmblems);
           return Padding(
             padding: const EdgeInsets.only(
               bottom: 8,
@@ -147,6 +194,14 @@ class QuisListScreenState extends State<QuisListScreen> {
                           : mainItemContentColor,
                     ),
                   ),
+                  !emblemsCoverPoints
+                      ? const Text(
+                          'ATENÇÃO: Quiz faltando emblemas!',
+                          style: TextStyle(
+                            color: Colors.red,
+                          ),
+                        )
+                      : const SizedBox.shrink()
                 ],
               ),
               // subtitle: Text(
