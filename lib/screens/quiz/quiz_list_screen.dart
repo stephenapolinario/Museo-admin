@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:async/async.dart';
-
 import 'package:flutter/material.dart';
 import 'package:museo_admin_application/extensions/string.dart';
 import 'package:museo_admin_application/models/emblem.dart';
