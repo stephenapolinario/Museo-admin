@@ -22,11 +22,11 @@ class EmblemService {
 
     final data = jsonDecode(response.body)['emblems'];
 
-    List<Emblem> objectList = (data as List).map((object) {
+    List<Emblem> emblemList = (data as List).map((object) {
       return Emblem.fromJson(object);
     }).toList();
 
-    return objectList;
+    return emblemList;
   }
 
   Future<EnumEmblem> delete(BuildContext context, Emblem object) async {

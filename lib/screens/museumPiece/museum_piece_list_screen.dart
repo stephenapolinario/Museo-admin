@@ -115,16 +115,35 @@ class MuseumPieceListScreenState extends State<MuseumPieceListScreen> {
                 color: Colors.black,
               ),
               title: Text(
-                context.loc.museum_piece_item_title,
+                currentMuseumPiece.title,
                 style: const TextStyle(
                   color: Colors.black,
                 ),
               ),
-              subtitle: Text(
-                currentMuseumPiece.title,
-                style: const TextStyle(
-                  color: mainItemContentColor,
-                ),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    currentMuseumPiece.beacon == null
+                        ? "Beacon deletado"
+                        : "Beacon ${currentMuseumPiece.beacon?.name}",
+                    style: TextStyle(
+                      color: currentMuseumPiece.beacon == null
+                          ? Colors.red
+                          : mainItemContentColor,
+                    ),
+                  ),
+                  Text(
+                    currentMuseumPiece.tour == null
+                        ? "Tour deletado"
+                        : "Tour ${currentMuseumPiece.tour?.title}",
+                    style: TextStyle(
+                      color: currentMuseumPiece.tour == null
+                          ? Colors.red
+                          : mainItemContentColor,
+                    ),
+                  ),
+                ],
               ),
               trailing: PopupMenuButton(
                 itemBuilder: (context) => [

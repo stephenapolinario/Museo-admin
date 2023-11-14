@@ -29,7 +29,7 @@ class _EmblemUpdateScreenState extends State<EmblemUpdateScreen> {
   late List<DropdownMenuItem<Quiz>> quizzesItems;
 
   late String? title, image, color;
-  late Quiz? selectedQuiz;
+  Quiz? selectedQuiz;
   late int? minPoints, maxPoints;
 
   // To prevent reload
@@ -53,7 +53,7 @@ class _EmblemUpdateScreenState extends State<EmblemUpdateScreen> {
       }).toList();
 
       selectedQuiz = quizzes.firstWhere(
-        (beacon) => beacon.id == widget.emblem.quiz.id,
+        (beacon) => beacon.id == widget.emblem.quiz?.id,
       );
     }
   }

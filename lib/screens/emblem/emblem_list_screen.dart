@@ -120,9 +120,13 @@ class EmblemListScreenState extends State<EmblemListScreen> {
               ),
             ),
             subtitle: Text(
-              currentEmblem.quiz.title,
-              style: const TextStyle(
-                color: mainItemContentColor,
+              currentEmblem.quiz != null
+                  ? currentEmblem.quiz!.title
+                  : 'Quiz deletado',
+              style: TextStyle(
+                color: currentEmblem.quiz != null
+                    ? mainItemContentColor
+                    : Colors.red,
               ),
             ),
             trailing: PopupMenuButton(

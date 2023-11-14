@@ -118,12 +118,37 @@ class QuisListScreenState extends State<QuisListScreen> {
                   color: Colors.black,
                 ),
               ),
-              subtitle: Text(
-                'Tour ${currentQuiz.tour.title.toCapitalizeFirstWord()}\nBeacon ${currentQuiz.beacon.name.toCapitalizeEveryInitialWord()}',
-                style: const TextStyle(
-                  color: mainItemContentColor,
-                ),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    currentQuiz.beacon == null
+                        ? "Beacon deletado"
+                        : "Beacon ${currentQuiz.beacon?.name.toCapitalizeEveryInitialWord()}",
+                    style: TextStyle(
+                      color: currentQuiz.beacon == null
+                          ? Colors.red
+                          : mainItemContentColor,
+                    ),
+                  ),
+                  Text(
+                    currentQuiz.tour == null
+                        ? "Tour deletado"
+                        : "Tour ${currentQuiz.tour?.title.toCapitalizeFirstWord()}",
+                    style: TextStyle(
+                      color: currentQuiz.tour == null
+                          ? Colors.red
+                          : mainItemContentColor,
+                    ),
+                  ),
+                ],
               ),
+              // subtitle: Text(
+              //   'Tour ${currentQuiz.tour.title.toCapitalizeFirstWord()}\nBeacon ${currentQuiz.beacon.name.toCapitalizeEveryInitialWord()}',
+              //   style: const TextStyle(
+              //     color: mainItemContentColor,
+              //   ),
+              // ),
               trailing: PopupMenuButton(
                 itemBuilder: (context) => [
                   PopupMenuItem(

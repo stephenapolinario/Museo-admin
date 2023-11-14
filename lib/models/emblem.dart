@@ -3,7 +3,7 @@ import 'package:museo_admin_application/models/quiz/quiz.dart';
 class Emblem {
   String id, title, image, color;
   int minPoints, maxPoints;
-  Quiz quiz;
+  Quiz? quiz;
 
   Emblem({
     required this.id,
@@ -16,7 +16,7 @@ class Emblem {
   });
 
   factory Emblem.fromJson(Map<String, dynamic> json) {
-    final quiz = Quiz.fromJson(json['quiz']);
+    final quiz = json['quiz'] != null ? Quiz.fromJson(json['quiz']) : null;
     return Emblem(
       id: json['_id'],
       title: json['title'],

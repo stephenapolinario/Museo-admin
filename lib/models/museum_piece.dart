@@ -4,8 +4,8 @@ import 'package:museo_admin_application/models/tour.dart';
 class MuseumPiece {
   String id, title, subtitle, description, image, color;
   int rssi;
-  Beacon beacon;
-  Tour tour;
+  Beacon? beacon;
+  Tour? tour;
 
   MuseumPiece({
     required this.id,
@@ -20,8 +20,11 @@ class MuseumPiece {
   });
 
   factory MuseumPiece.fromJson(Map<String, dynamic> json) {
-    final beacon = Beacon.fromJson(json['beacon']);
-    final tour = Tour.fromJson(json['tour']);
+    final beacon =
+        json['beacon'] != null ? Beacon.fromJson(json['beacon']) : null;
+    final tour = json['tour'] != null ? Tour.fromJson(json['tour']) : null;
+    // final beacon = Beacon.fromJson(json['beacon']);
+    // final tour = Tour.fromJson(json['tour']);
 
     return MuseumPiece(
       id: json['_id'],

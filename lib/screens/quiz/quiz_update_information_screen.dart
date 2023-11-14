@@ -36,8 +36,8 @@ class _QuizUpdateInformationScreenState
   late List<Beacon> beaconList;
   late List<DropdownMenuItem<Tour>> tourItems;
   late List<DropdownMenuItem<Beacon>> beaconItems;
-  late Tour? selectedTour;
-  late Beacon? selectedBeacon;
+  Tour? selectedTour;
+  Beacon? selectedBeacon;
 
   // To prevent reload
   late Future<void> fetchDataFuture;
@@ -77,11 +77,11 @@ class _QuizUpdateInformationScreenState
       }).toList();
 
       selectedBeacon = beaconList.firstWhere(
-        (beacon) => beacon.id == widget.currentQuiz.beacon.id,
+        (beacon) => beacon.id == widget.currentQuiz.beacon?.id,
       );
 
       selectedTour = tourList.firstWhere(
-        (tour) => tour.id == widget.currentQuiz.tour.id,
+        (tour) => tour.id == widget.currentQuiz.tour?.id,
       );
     }
   }

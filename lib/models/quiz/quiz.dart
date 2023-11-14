@@ -5,8 +5,8 @@ class Quiz {
   final String id, title, color;
   final int rssi;
   final List<Question> questions;
-  final Beacon beacon;
-  final Tour tour;
+  final Beacon? beacon;
+  final Tour? tour;
 
   Quiz({
     required this.id,
@@ -19,8 +19,10 @@ class Quiz {
   });
 
   factory Quiz.fromJson(Map<String, dynamic> json) {
-    final beacon = Beacon.fromJson(json['beacon']);
-    final tour = Tour.fromJson(json['tour']);
+    final beacon =
+        json['beacon'] != null ? Beacon.fromJson(json['beacon']) : null;
+    final tour = json['tour'] != null ? Tour.fromJson(json['tour']) : null;
+
     return Quiz(
       id: json['_id'],
       title: json['title'],

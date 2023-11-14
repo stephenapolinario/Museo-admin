@@ -29,8 +29,8 @@ class _MuseumPieceUpdateScreenState extends State<MuseumPieceUpdateScreen> {
   final museumPieceUpdateKey = GlobalKey<FormState>();
   late String? title, subtitle, description, image, color;
   late int? rssi;
-  late Beacon? selectedBeacon;
-  late Tour? selectedTour;
+  Beacon? selectedBeacon;
+  Tour? selectedTour;
 
   late List<Beacon> beaconList;
   late List<Tour> tourList;
@@ -67,11 +67,11 @@ class _MuseumPieceUpdateScreenState extends State<MuseumPieceUpdateScreen> {
       }).toList();
 
       selectedBeacon = beaconList.firstWhere(
-        (beacon) => beacon.id == widget.museumPiece.beacon.id,
+        (beacon) => beacon.id == widget.museumPiece.beacon?.id,
       );
 
       selectedTour = tourList.firstWhere(
-        (tour) => tour.id == widget.museumPiece.tour.id,
+        (tour) => tour.id == widget.museumPiece.tour?.id,
       );
     }
   }
