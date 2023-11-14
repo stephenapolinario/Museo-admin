@@ -36,6 +36,12 @@ class QuisListScreenState extends State<QuisListScreen> {
     super.dispose();
   }
 
+  @override
+  void didChangeDependencies() {
+    fetchData();
+    super.didChangeDependencies();
+  }
+
   void fetchData() async {
     List<Quiz> data = await QuizService().readAll(context);
     _quizStreamController.sink.add(data);

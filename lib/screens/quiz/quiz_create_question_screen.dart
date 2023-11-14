@@ -5,6 +5,7 @@ import 'package:museo_admin_application/constants/colors.dart';
 import 'package:museo_admin_application/helpers/loading_complete.dart';
 import 'package:museo_admin_application/models/quiz/quiz.dart';
 import 'package:museo_admin_application/providers/quiz.dart';
+import 'package:museo_admin_application/screens/quiz/quiz_list_screen.dart';
 import 'package:museo_admin_application/services/quiz_service.dart';
 import 'package:museo_admin_application/utilities/check_regex_color.dart';
 import 'package:provider/provider.dart';
@@ -432,9 +433,15 @@ class _QuizCreateQuestionScreenState extends State<QuizCreateQuestionScreen> {
                         : context.loc.create_quiz_question_error_content,
                     context: context,
                   );
-                  response == EnumQuiz.success
-                      ? navigator.popAndPushNamed(quiz)
-                      : null;
+                  if (response == EnumQuiz.success) {
+                    navigator.pushReplacement(
+                      MaterialPageRoute(
+                        builder: (context) {
+                          return const QuisListScreen();
+                        },
+                      ),
+                    );
+                  }
                 }
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
