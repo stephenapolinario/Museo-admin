@@ -7,7 +7,6 @@ import 'package:museo_admin_application/helpers/color_pick.dart';
 import 'package:museo_admin_application/helpers/loading_complete.dart';
 import 'package:museo_admin_application/models/quiz/quiz.dart';
 import 'package:museo_admin_application/providers/quiz.dart';
-import 'package:museo_admin_application/screens/quiz/quiz_list_screen.dart';
 import 'package:museo_admin_application/services/quiz_service.dart';
 import 'package:provider/provider.dart';
 
@@ -424,14 +423,7 @@ class _QuizCreateQuestionScreenState extends State<QuizCreateQuestionScreen> {
                     context: context,
                   );
                   if (response == EnumQuiz.success) {
-                    navigator.popUntil(
-                      ModalRoute.withName('/quiz'),
-                    );
-                    navigator.pushReplacement(
-                      MaterialPageRoute(
-                        builder: (context) => const QuisListScreen(),
-                      ),
-                    );
+                    navigator.pop();
                   }
                 }
               } else {

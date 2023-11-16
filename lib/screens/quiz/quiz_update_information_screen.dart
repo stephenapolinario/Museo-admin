@@ -9,7 +9,6 @@ import 'package:museo_admin_application/models/beacon.dart';
 import 'package:museo_admin_application/models/quiz/quiz.dart';
 import 'package:museo_admin_application/models/tour.dart';
 import 'package:museo_admin_application/providers/quiz.dart';
-import 'package:museo_admin_application/screens/quiz/quiz_list_screen.dart';
 import 'package:museo_admin_application/services/beacon_service.dart';
 import 'package:museo_admin_application/services/quiz_service.dart';
 import 'package:museo_admin_application/services/tour_service.dart';
@@ -316,7 +315,8 @@ class _QuizUpdateInformationScreenState
                 beacon: selectedBeacon,
                 rssi: rssi,
                 tour: selectedTour,
-                color: color!.toHex(),
+                color:
+                    color != null ? color!.toHex() : widget.currentQuiz.color,
               );
 
               if (mounted) {
@@ -331,14 +331,7 @@ class _QuizUpdateInformationScreenState
                 );
               }
 
-              navigator.popUntil(
-                ModalRoute.withName('/quiz'),
-              );
-              navigator.pushReplacement(
-                MaterialPageRoute(
-                  builder: (context) => const QuisListScreen(),
-                ),
-              );
+              navigator.pop();
             }
           },
         ),
