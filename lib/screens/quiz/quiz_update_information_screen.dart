@@ -268,7 +268,7 @@ class _QuizUpdateInformationScreenState
         Align(
           alignment: Alignment.topLeft,
           child: Text(
-            context.loc.emblem_color_pick_input,
+            context.loc.quiz_screen_pick_input,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 16,

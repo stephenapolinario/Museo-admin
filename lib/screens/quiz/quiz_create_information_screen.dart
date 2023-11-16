@@ -265,7 +265,7 @@ class _QuizCreateInformationScreenState
         Align(
           alignment: Alignment.topLeft,
           child: Text(
-            context.loc.emblem_color_pick_input,
+            context.loc.quiz_screen_pick_input,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 16,
@@ -279,7 +279,7 @@ class _QuizCreateInformationScreenState
         ),
         if (color == null && submit && quizProvider.color == null)
           Text(
-            context.loc.emblem_color_pick_input_error,
+            context.loc.quiz_screen_pick_input_error,
             style: const TextStyle(
               color: Colors.red,
             ),

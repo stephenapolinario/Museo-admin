@@ -35,8 +35,6 @@ class _QuizUpdateScreenState extends State<QuizUpdateScreen> {
 
   late List<Question> questions;
 
-  bool submit = false;
-
   @override
   void initState() {
     super.initState();
@@ -360,7 +358,7 @@ class _QuizUpdateScreenState extends State<QuizUpdateScreen> {
         Align(
           alignment: Alignment.topLeft,
           child: Text(
-            context.loc.emblem_color_pick_input,
+            context.loc.quiz_screen_pick_input,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 16,
@@ -376,7 +374,7 @@ class _QuizUpdateScreenState extends State<QuizUpdateScreen> {
             });
           },
         ),
-        if (submit && color.isEmpty)
+        if (color.isEmpty)
           Text(
             context.loc.emblem_color_pick_input_error,
             style: const TextStyle(

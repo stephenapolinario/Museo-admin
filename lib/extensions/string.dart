@@ -22,14 +22,16 @@ extension StringExtension on String {
   }
 
   Color fromHex() {
-    try {
-      String hexColor = replaceAll('#', '');
+    String hexColor = replaceAll('#', '');
 
-      int parsedColor = int.parse(hexColor, radix: 16);
+    RegExp hexRegex = RegExp(r'^([0-9a-fA-F]{6}|[0-9a-fA-F]{8})$');
 
-      return Color(parsedColor);
-    } catch (e) {
-      throw 'Error $e';
+    if (!hexRegex.hasMatch(hexColor)) {
+      return Colors.black;
     }
+
+    int parsedColor = int.parse(hexColor, radix: 16);
+
+    return Color(parsedColor);
   }
 }

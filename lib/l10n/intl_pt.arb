@@ -449,6 +449,8 @@
 	"quiz_screen_rssi_valid_error": "Por favor, escolha o RSSI do quiz",
 	"quiz_screen_color_input": "Cor",
 	"quiz_screen_color_hint": "0000000",
+	"quiz_screen_pick_input": "Cor",
+	"quiz_screen_pick_input_error": "Por favor, selecione uma cor",
 	"quiz_screen_color_valid_error": "Por favor, escolha uma cor para quiz",
 	"quiz_screen_tour_input": "Tour",
 	"quiz_screen_tour_hint": "Nome do tour",
