@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:museo_admin_application/extensions/buildcontext/loc.dart';
 import 'package:museo_admin_application/constants/colors.dart';
+import 'package:museo_admin_application/extensions/color.dart';
+import 'package:museo_admin_application/extensions/string.dart';
+import 'package:museo_admin_application/helpers/color_pick.dart';
 import 'package:museo_admin_application/helpers/loading_complete.dart';
 import 'package:museo_admin_application/models/quiz/quiz.dart';
 import 'package:museo_admin_application/providers/quiz.dart';
 import 'package:museo_admin_application/screens/quiz/quiz_list_screen.dart';
 import 'package:museo_admin_application/services/quiz_service.dart';
-import 'package:museo_admin_application/utilities/check_regex_color.dart';
 import 'package:provider/provider.dart';
 
 bool isAtLeastOneOptionChecked(List<Option> options) {
@@ -25,11 +27,13 @@ class QuizCreateQuestionScreen extends StatefulWidget {
 
 class _QuizCreateQuestionScreenState extends State<QuizCreateQuestionScreen> {
   final quizInformationCreateKey = GlobalKey<FormState>();
-  late String? question, color;
+  late String? question;
   late double? rssi;
   late QuizProvider quizProvider;
 
   final List<Question> questions = [];
+
+  bool submit = false;
 
   @override
   void initState() {
@@ -346,55 +350,36 @@ class _QuizCreateQuestionScreenState extends State<QuizCreateQuestionScreen> {
     );
   }
 
-  Widget colorInput(BuildContext context, Question quiz) {
+  Widget colorInput(BuildContext context, Question question) {
+    String color = question.color;
     return Column(
       children: [
         Align(
           alignment: Alignment.topLeft,
           child: Text(
-            context.loc.quiz_screen_question_color_input,
+            context.loc.emblem_color_pick_input,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 16,
             ),
           ),
         ),
-        TextFormField(
-          initialValue: quiz.color,
-          decoration: InputDecoration(
-            hintText: context.loc.quiz_screen_question_color_hint,
-            contentPadding: const EdgeInsets.only(left: 10),
-            fillColor: Colors.white,
-            filled: true,
-            border: const OutlineInputBorder(),
-            errorStyle: const TextStyle(
-              color: Colors.red,
-            ),
-            errorBorder: const OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.red,
-                width: 2,
-              ),
-            ),
-            focusedErrorBorder: const OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.red,
-                width: 2,
-              ),
-            ),
-          ),
-          onChanged: (value) {
-            quiz.color = value;
-          },
-          validator: (value) {
-            if (value != null) {
-              if (!isHexColor(value)) {
-                return context.loc.quiz_screen_question_color_valid_error;
-              }
-            }
-            return null;
+        colorPick(
+          context,
+          color.isEmpty ? Colors.black : color.fromHex(),
+          (Color color) {
+            setState(() {
+              question.color = color.toHex();
+            });
           },
         ),
+        if (submit && color.isEmpty)
+          Text(
+            context.loc.emblem_color_pick_input_error,
+            style: const TextStyle(
+              color: Colors.red,
+            ),
+          ),
       ],
     );
   }
@@ -413,11 +398,17 @@ class _QuizCreateQuestionScreenState extends State<QuizCreateQuestionScreen> {
             ),
           ),
           onPressed: () async {
+            setState(() {
+              submit = true;
+            });
             final navigator = Navigator.of(context);
             FocusManager.instance.primaryFocus?.unfocus();
             final isValid = quizInformationCreateKey.currentState!.validate();
+            final everyAwnserHaveColor = questions.every(
+              (element) => element.color.isNotEmpty,
+            );
 
-            if (isValid) {
+            if (isValid && everyAwnserHaveColor) {
               if (isAtLeastOneOptionChecked(questions.last.options)) {
                 quizProvider.saveQuestion(newQuestions: questions);
                 final response = await QuizService().create(context);
@@ -433,11 +424,12 @@ class _QuizCreateQuestionScreenState extends State<QuizCreateQuestionScreen> {
                     context: context,
                   );
                   if (response == EnumQuiz.success) {
+                    navigator.popUntil(
+                      ModalRoute.withName('/quiz'),
+                    );
                     navigator.pushReplacement(
                       MaterialPageRoute(
-                        builder: (context) {
-                          return const QuisListScreen();
-                        },
+                        builder: (context) => const QuisListScreen(),
                       ),
                     );
                   }

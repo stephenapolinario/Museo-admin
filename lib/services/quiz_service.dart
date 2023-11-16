@@ -56,6 +56,7 @@ class QuizService {
     Beacon? beacon,
     double? rssi,
     List<Question>? questions,
+    String? color,
   }) async {
     List<Map<String, dynamic>> questionsJson = [];
 
@@ -81,6 +82,7 @@ class QuizService {
       if (tour != null) 'tour': tour.id,
       if (beacon != null) 'beacon': beacon.id,
       if (rssi != null) 'rssi': rssi,
+      if (color != null) 'color': color,
       if (questionsJson.isNotEmpty) 'questions': questionsJson,
     };
 

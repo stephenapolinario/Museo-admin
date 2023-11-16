@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:museo_admin_application/extensions/color.dart';
+import 'package:museo_admin_application/helpers/color_pick.dart';
 import 'package:museo_admin_application/helpers/loading_complete.dart';
 import 'package:museo_admin_application/extensions/buildcontext/loc.dart';
 import 'package:museo_admin_application/constants/colors.dart';
@@ -7,7 +9,6 @@ import 'package:museo_admin_application/models/tour.dart';
 import 'package:museo_admin_application/services/beacon_service.dart';
 import 'package:museo_admin_application/services/museum_piece_service.dart';
 import 'package:museo_admin_application/services/tour_service.dart';
-import 'package:museo_admin_application/utilities/check_regex_color.dart';
 
 class MuseumPieceCreateScreen extends StatefulWidget {
   final Function onUpdate;
@@ -24,10 +25,13 @@ class MuseumPieceCreateScreen extends StatefulWidget {
 
 class _MuseumPieceCreateScreenState extends State<MuseumPieceCreateScreen> {
   final museumPieceCreateKey = GlobalKey<FormState>();
-  late String? title, subtitle, description, image, color;
+  late String? title, subtitle, description, image;
   late int? rssi;
   late Beacon? selectedBeacon;
   late Tour? selectedTour;
+
+  bool submit = false;
+  Color? color;
 
   late List<Beacon> beaconList;
   late List<Tour> tourList;
@@ -63,6 +67,12 @@ class _MuseumPieceCreateScreenState extends State<MuseumPieceCreateScreen> {
         );
       }).toList();
     }
+  }
+
+  void onUpdateColor(Color value) {
+    setState(() {
+      color = value;
+    });
   }
 
   @override
@@ -392,48 +402,25 @@ class _MuseumPieceCreateScreenState extends State<MuseumPieceCreateScreen> {
         Align(
           alignment: Alignment.topLeft,
           child: Text(
-            context.loc.museum_peice_screen_color_input,
+            context.loc.museum_peice_pick_input,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 16,
             ),
           ),
         ),
-        TextFormField(
-          decoration: InputDecoration(
-            hintText: context.loc.museum_peice_screen_color_hint,
-            contentPadding: const EdgeInsets.only(left: 10),
-            fillColor: Colors.white,
-            filled: true,
-            border: const OutlineInputBorder(),
-            errorStyle: const TextStyle(
+        colorPick(
+          context,
+          color,
+          onUpdateColor,
+        ),
+        if (color == null && submit)
+          Text(
+            context.loc.emblem_color_pick_input_error,
+            style: const TextStyle(
               color: Colors.red,
             ),
-            errorBorder: const OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.red,
-                // width: 2,
-              ),
-            ),
-            focusedErrorBorder: const OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.red,
-                width: 2,
-              ),
-            ),
           ),
-          validator: (value) {
-            if (value != null) {
-              if (!isHexColor(value)) {
-                return context.loc.museum_peice_screen_color_not_valid;
-              }
-            }
-            return null;
-          },
-          onSaved: (newValue) => setState(() {
-            color = newValue;
-          }),
-        ),
       ],
     );
   }
@@ -560,11 +547,14 @@ class _MuseumPieceCreateScreenState extends State<MuseumPieceCreateScreen> {
             ),
           ),
           onPressed: () async {
+            setState(() {
+              submit = true;
+            });
             final navigator = Navigator.of(context);
             FocusManager.instance.primaryFocus?.unfocus();
             final isValid = museumPieceCreateKey.currentState!.validate();
 
-            if (isValid) {
+            if (isValid && color != null) {
               museumPieceCreateKey.currentState!.save();
               final museumPiece = await MuseumPieceService().create(
                 context,
@@ -573,7 +563,7 @@ class _MuseumPieceCreateScreenState extends State<MuseumPieceCreateScreen> {
                 description!,
                 image!,
                 rssi!,
-                color!,
+                color!.toHex(),
                 selectedBeacon!,
                 selectedTour!,
               );

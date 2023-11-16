@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:museo_admin_application/extensions/buildcontext/loc.dart';
 import 'package:museo_admin_application/constants/colors.dart';
+import 'package:museo_admin_application/extensions/color.dart';
+import 'package:museo_admin_application/extensions/string.dart';
+import 'package:museo_admin_application/helpers/color_pick.dart';
 import 'package:museo_admin_application/helpers/loading_complete.dart';
 import 'package:museo_admin_application/models/beacon.dart';
 import 'package:museo_admin_application/models/tour.dart';
 import 'package:museo_admin_application/providers/quiz.dart';
 import 'package:museo_admin_application/services/beacon_service.dart';
 import 'package:museo_admin_application/services/tour_service.dart';
-import 'package:museo_admin_application/utilities/check_regex_color.dart';
 import 'package:provider/provider.dart';
 
 class QuizCreateInformationScreen extends StatefulWidget {
@@ -23,7 +25,7 @@ class QuizCreateInformationScreen extends StatefulWidget {
 class _QuizCreateInformationScreenState
     extends State<QuizCreateInformationScreen> {
   final quizInformationCreateKey = GlobalKey<FormState>();
-  late String? title, color;
+  late String? title;
   late double? rssi;
   late QuizProvider quizProvider;
 
@@ -36,6 +38,9 @@ class _QuizCreateInformationScreenState
 
   // To prevent reload
   late Future<void> fetchDataFuture;
+
+  bool submit = false;
+  Color? color;
 
   @override
   void initState() {
@@ -75,6 +80,12 @@ class _QuizCreateInformationScreenState
             )
           : null;
     }
+  }
+
+  void onUpdateColor(Color value) {
+    setState(() {
+      color = value;
+    });
   }
 
   @override
@@ -254,50 +265,25 @@ class _QuizCreateInformationScreenState
         Align(
           alignment: Alignment.topLeft,
           child: Text(
-            context.loc.quiz_screen_color_input,
+            context.loc.emblem_color_pick_input,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 16,
             ),
           ),
         ),
-        TextFormField(
-          initialValue: quizProvider.color,
-          decoration: InputDecoration(
-            hintText: context.loc.quiz_screen_color_hint,
-            contentPadding: const EdgeInsets.only(left: 10),
-            fillColor: Colors.white,
-            filled: true,
-            border: const OutlineInputBorder(),
-            errorStyle: const TextStyle(
+        colorPick(
+          context,
+          quizProvider.color != null ? quizProvider.color!.fromHex() : color,
+          onUpdateColor,
+        ),
+        if (color == null && submit && quizProvider.color == null)
+          Text(
+            context.loc.emblem_color_pick_input_error,
+            style: const TextStyle(
               color: Colors.red,
             ),
-            errorBorder: const OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.red,
-                width: 2,
-              ),
-            ),
-            focusedErrorBorder: const OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.red,
-                width: 2,
-              ),
-            ),
           ),
-          validator: (value) {
-            if (value != null) {
-              if (!isHexColor(value)) {
-                return context.loc.quiz_screen_color_valid_error;
-              }
-            }
-
-            return null;
-          },
-          onSaved: (newValue) => setState(() {
-            color = newValue;
-          }),
-        ),
       ],
     );
   }
@@ -316,15 +302,19 @@ class _QuizCreateInformationScreenState
             ),
           ),
           onPressed: () async {
+            setState(() {
+              submit = true;
+            });
+
             final navigator = Navigator.of(context);
             FocusManager.instance.primaryFocus?.unfocus();
             final isValid = quizInformationCreateKey.currentState!.validate();
 
-            if (isValid) {
+            if (isValid && (quizProvider.color != null || color != null)) {
               quizInformationCreateKey.currentState!.save();
               quizProvider.saveBasicInformation(
                 newTitle: title!,
-                newColor: color!,
+                newColor: color != null ? color!.toHex() : quizProvider.color!,
                 newRssi: rssi!,
                 newBeacon: selectedBeacon!,
                 newTour: selectedTour!,

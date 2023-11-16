@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:museo_admin_application/constants/routes.dart';
 import 'package:museo_admin_application/extensions/buildcontext/loc.dart';
 import 'package:museo_admin_application/constants/colors.dart';
+import 'package:museo_admin_application/extensions/color.dart';
+import 'package:museo_admin_application/extensions/string.dart';
+import 'package:museo_admin_application/helpers/color_pick.dart';
 import 'package:museo_admin_application/helpers/loading_complete.dart';
 import 'package:museo_admin_application/models/beacon.dart';
 import 'package:museo_admin_application/models/quiz/quiz.dart';
 import 'package:museo_admin_application/models/tour.dart';
 import 'package:museo_admin_application/providers/quiz.dart';
+import 'package:museo_admin_application/screens/quiz/quiz_list_screen.dart';
 import 'package:museo_admin_application/services/beacon_service.dart';
 import 'package:museo_admin_application/services/quiz_service.dart';
 import 'package:museo_admin_application/services/tour_service.dart';
-import 'package:museo_admin_application/utilities/check_regex_color.dart';
 import 'package:provider/provider.dart';
 
 class QuizUpdateInformationScreen extends StatefulWidget {
@@ -29,7 +31,7 @@ class QuizUpdateInformationScreen extends StatefulWidget {
 class _QuizUpdateInformationScreenState
     extends State<QuizUpdateInformationScreen> {
   final quizInformationCreateKey = GlobalKey<FormState>();
-  late String? title, color;
+  late String? title;
   late double? rssi;
 
   late List<Tour> tourList;
@@ -43,6 +45,9 @@ class _QuizUpdateInformationScreenState
   late Future<void> fetchDataFuture;
 
   late QuizProvider quizProvider;
+
+  bool submit = false;
+  Color? color;
 
   @override
   void initState() {
@@ -84,6 +89,12 @@ class _QuizUpdateInformationScreenState
         (tour) => tour.id == widget.currentQuiz.tour?.id,
       );
     }
+  }
+
+  void onUpdateColor(Color value) {
+    setState(() {
+      color = value;
+    });
   }
 
   @override
@@ -257,49 +268,17 @@ class _QuizUpdateInformationScreenState
         Align(
           alignment: Alignment.topLeft,
           child: Text(
-            context.loc.quiz_screen_color_input,
+            context.loc.emblem_color_pick_input,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 16,
             ),
           ),
         ),
-        TextFormField(
-          initialValue: widget.currentQuiz.color,
-          decoration: InputDecoration(
-            hintText: context.loc.quiz_screen_color_hint,
-            contentPadding: const EdgeInsets.only(left: 10),
-            fillColor: Colors.white,
-            filled: true,
-            border: const OutlineInputBorder(),
-            errorStyle: const TextStyle(
-              color: Colors.red,
-            ),
-            errorBorder: const OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.red,
-                width: 2,
-              ),
-            ),
-            focusedErrorBorder: const OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.red,
-                width: 2,
-              ),
-            ),
-          ),
-          validator: (value) {
-            if (value != null) {
-              if (!isHexColor(value)) {
-                return context.loc.quiz_screen_color_valid_error;
-              }
-            }
-
-            return null;
-          },
-          onSaved: (newValue) => setState(() {
-            color = newValue;
-          }),
+        colorPick(
+          context,
+          color ?? widget.currentQuiz.color.fromHex(),
+          onUpdateColor,
         ),
       ],
     );
@@ -312,7 +291,7 @@ class _QuizUpdateInformationScreenState
         const SizedBox(height: 20),
         TextButton(
           child: Text(
-            context.loc.save_button,
+            context.loc.update_button,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 18,
@@ -324,6 +303,10 @@ class _QuizUpdateInformationScreenState
             final isValid = quizInformationCreateKey.currentState!.validate();
 
             if (isValid) {
+              setState(() {
+                submit = true;
+              });
+
               quizInformationCreateKey.currentState!.save();
 
               final response = await QuizService().update(
@@ -333,6 +316,7 @@ class _QuizUpdateInformationScreenState
                 beacon: selectedBeacon,
                 rssi: rssi,
                 tour: selectedTour,
+                color: color!.toHex(),
               );
 
               if (mounted) {
@@ -347,7 +331,14 @@ class _QuizUpdateInformationScreenState
                 );
               }
 
-              navigator.popAndPushNamed(quiz);
+              navigator.popUntil(
+                ModalRoute.withName('/quiz'),
+              );
+              navigator.pushReplacement(
+                MaterialPageRoute(
+                  builder: (context) => const QuisListScreen(),
+                ),
+              );
             }
           },
         ),

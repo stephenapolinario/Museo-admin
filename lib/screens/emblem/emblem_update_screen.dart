@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:museo_admin_application/constants/colors.dart';
 import 'package:museo_admin_application/extensions/buildcontext/loc.dart';
+import 'package:museo_admin_application/extensions/color.dart';
 import 'package:museo_admin_application/extensions/string.dart';
+import 'package:museo_admin_application/helpers/color_pick.dart';
 import 'package:museo_admin_application/helpers/loading_complete.dart';
 import 'package:museo_admin_application/models/emblem.dart';
 import 'package:museo_admin_application/models/quiz/quiz.dart';
@@ -28,9 +30,10 @@ class _EmblemUpdateScreenState extends State<EmblemUpdateScreen> {
   late List<Quiz> quizzes;
   late List<DropdownMenuItem<Quiz>> quizzesItems;
 
-  late String? title, image, color;
+  late String? title, image;
   Quiz? selectedQuiz;
   late int? minPoints, maxPoints;
+  Color? color;
 
   // To prevent reload
   late Future<void> fetchDataFuture;
@@ -56,6 +59,12 @@ class _EmblemUpdateScreenState extends State<EmblemUpdateScreen> {
         (beacon) => beacon.id == widget.emblem.quiz?.id,
       );
     }
+  }
+
+  void onUpdateColor(Color value) {
+    setState(() {
+      color = value;
+    });
   }
 
   @override
@@ -339,48 +348,17 @@ class _EmblemUpdateScreenState extends State<EmblemUpdateScreen> {
         Align(
           alignment: Alignment.topLeft,
           child: Text(
-            context.loc.emblem_color_input,
+            context.loc.emblem_color_pick_input,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 16,
             ),
           ),
         ),
-        TextFormField(
-          initialValue: widget.emblem.color,
-          keyboardType: TextInputType.number,
-          decoration: InputDecoration(
-            hintText: context.loc.emblem_color_hint,
-            contentPadding: const EdgeInsets.only(left: 10),
-            fillColor: Colors.white,
-            filled: true,
-            border: const OutlineInputBorder(),
-            errorStyle: const TextStyle(
-              color: Colors.red,
-            ),
-            errorBorder: const OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.red,
-                // width: 2,
-              ),
-            ),
-            focusedErrorBorder: const OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.red,
-                width: 2,
-              ),
-            ),
-          ),
-          validator: (value) {
-            final hexColorRegex = RegExp(r'^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$');
-            if (!hexColorRegex.hasMatch(value!)) {
-              return context.loc.emblem_color_not_valid;
-            }
-            return null;
-          },
-          onSaved: (newValue) => setState(() {
-            color = newValue;
-          }),
+        colorPick(
+          context,
+          color ?? widget.emblem.color.fromHex(),
+          onUpdateColor,
         ),
       ],
     );
@@ -467,7 +445,7 @@ class _EmblemUpdateScreenState extends State<EmblemUpdateScreen> {
                 minPoints!,
                 maxPoints!,
                 selectedQuiz!,
-                color!,
+                color!.toHex(),
                 widget.emblem,
               );
               widget.onUpdate();

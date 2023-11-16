@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:museo_admin_application/extensions/color.dart';
+import 'package:museo_admin_application/helpers/color_pick.dart';
 import 'package:museo_admin_application/helpers/loading_complete.dart';
 import 'package:museo_admin_application/extensions/buildcontext/loc.dart';
 import 'package:museo_admin_application/constants/colors.dart';
 import 'package:museo_admin_application/models/store/product_category.dart';
 import 'package:museo_admin_application/services/store/product_category_service.dart';
 import 'package:museo_admin_application/services/store/product_service.dart';
-import 'package:museo_admin_application/utilities/check_regex_color.dart';
 import 'package:museo_admin_application/utilities/check_url.dart';
 
 class ProductCreateScreen extends StatefulWidget {
@@ -22,7 +23,7 @@ class ProductCreateScreen extends StatefulWidget {
 
 class _ProductCreateScreenState extends State<ProductCreateScreen> {
   final productCreateKey = GlobalKey<FormState>();
-  late String? name, description, image, size, color;
+  late String? name, description, image, size;
   late double? price;
   late List<ProductCategory> productCategories;
 
@@ -31,6 +32,9 @@ class _ProductCreateScreenState extends State<ProductCreateScreen> {
 
   late List<DropdownMenuItem<ProductCategory>> productCategoryItems;
   late ProductCategory? selectedProductCategory;
+
+  bool submit = false;
+  Color? color;
 
   @override
   void initState() {
@@ -49,6 +53,12 @@ class _ProductCreateScreenState extends State<ProductCreateScreen> {
         );
       }).toList();
     }
+  }
+
+  void onUpdateColor(Color value) {
+    setState(() {
+      color = value;
+    });
   }
 
   @override
@@ -378,46 +388,25 @@ class _ProductCreateScreenState extends State<ProductCreateScreen> {
         Align(
           alignment: Alignment.topLeft,
           child: Text(
-            context.loc.product_screen_color_input,
+            context.loc.product_screen_color_pick_input,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 16,
             ),
           ),
         ),
-        TextFormField(
-          decoration: InputDecoration(
-            hintText: context.loc.product_screen_color_hint,
-            contentPadding: const EdgeInsets.only(left: 10),
-            fillColor: Colors.white,
-            filled: true,
-            border: const OutlineInputBorder(),
-            errorStyle: const TextStyle(
+        colorPick(
+          context,
+          color,
+          onUpdateColor,
+        ),
+        if (color == null && submit)
+          Text(
+            context.loc.product_screen_color_pick_input_error,
+            style: const TextStyle(
               color: Colors.red,
             ),
-            errorBorder: const OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.red,
-                // width: 2,
-              ),
-            ),
-            focusedErrorBorder: const OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.red,
-                width: 2,
-              ),
-            ),
           ),
-          validator: (value) {
-            if (value == null || value == '' || !isHexColor(value)) {
-              return context.loc.product_screen_color_valid_error;
-            }
-            return null;
-          },
-          onSaved: (newValue) => setState(() {
-            color = newValue;
-          }),
-        ),
       ],
     );
   }
@@ -444,7 +433,7 @@ class _ProductCreateScreenState extends State<ProductCreateScreen> {
           },
           items: productCategoryItems,
           decoration: InputDecoration(
-            hintText: context.loc.museum_peice_screen_beacon_hint,
+            hintText: context.loc.product_screen_category_hint,
             contentPadding: const EdgeInsets.only(left: 10),
             fillColor: Colors.white,
             filled: true,
@@ -490,6 +479,9 @@ class _ProductCreateScreenState extends State<ProductCreateScreen> {
             ),
           ),
           onPressed: () async {
+            setState(() {
+              submit = true;
+            });
             final navigator = Navigator.of(context);
             FocusManager.instance.primaryFocus?.unfocus();
             final isValid = productCreateKey.currentState!.validate();
@@ -503,7 +495,7 @@ class _ProductCreateScreenState extends State<ProductCreateScreen> {
                 image!,
                 size!,
                 price!,
-                color!,
+                color!.toHex(),
                 selectedProductCategory!,
               );
               widget.onUpdate();

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:museo_admin_application/extensions/color.dart';
+import 'package:museo_admin_application/extensions/string.dart';
+import 'package:museo_admin_application/helpers/color_pick.dart';
 import 'package:museo_admin_application/helpers/loading_complete.dart';
 import 'package:museo_admin_application/extensions/buildcontext/loc.dart';
 import 'package:museo_admin_application/constants/colors.dart';
@@ -8,7 +11,6 @@ import 'package:museo_admin_application/models/tour.dart';
 import 'package:museo_admin_application/services/beacon_service.dart';
 import 'package:museo_admin_application/services/museum_piece_service.dart';
 import 'package:museo_admin_application/services/tour_service.dart';
-import 'package:museo_admin_application/utilities/check_regex_color.dart';
 
 class MuseumPieceUpdateScreen extends StatefulWidget {
   final Function onUpdate;
@@ -27,10 +29,11 @@ class MuseumPieceUpdateScreen extends StatefulWidget {
 
 class _MuseumPieceUpdateScreenState extends State<MuseumPieceUpdateScreen> {
   final museumPieceUpdateKey = GlobalKey<FormState>();
-  late String? title, subtitle, description, image, color;
+  late String? title, subtitle, description, image;
   late int? rssi;
   Beacon? selectedBeacon;
   Tour? selectedTour;
+  Color? color;
 
   late List<Beacon> beaconList;
   late List<Tour> tourList;
@@ -74,6 +77,12 @@ class _MuseumPieceUpdateScreenState extends State<MuseumPieceUpdateScreen> {
         (tour) => tour.id == widget.museumPiece.tour?.id,
       );
     }
+  }
+
+  void onUpdateColor(Color value) {
+    setState(() {
+      color = value;
+    });
   }
 
   @override
@@ -408,48 +417,17 @@ class _MuseumPieceUpdateScreenState extends State<MuseumPieceUpdateScreen> {
         Align(
           alignment: Alignment.topLeft,
           child: Text(
-            context.loc.museum_peice_screen_color_input,
+            context.loc.museum_peice_pick_input,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 16,
             ),
           ),
         ),
-        TextFormField(
-          initialValue: widget.museumPiece.color,
-          decoration: InputDecoration(
-            hintText: context.loc.museum_peice_screen_color_hint,
-            contentPadding: const EdgeInsets.only(left: 10),
-            fillColor: Colors.white,
-            filled: true,
-            border: const OutlineInputBorder(),
-            errorStyle: const TextStyle(
-              color: Colors.red,
-            ),
-            errorBorder: const OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.red,
-                // width: 2,
-              ),
-            ),
-            focusedErrorBorder: const OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.red,
-                width: 2,
-              ),
-            ),
-          ),
-          validator: (value) {
-            if (value != null) {
-              if (!isHexColor(value)) {
-                return context.loc.museum_peice_screen_color_not_valid;
-              }
-            }
-            return null;
-          },
-          onSaved: (newValue) => setState(() {
-            color = newValue;
-          }),
+        colorPick(
+          context,
+          color ?? widget.museumPiece.color.fromHex(),
+          onUpdateColor,
         ),
       ],
     );
@@ -591,7 +569,7 @@ class _MuseumPieceUpdateScreenState extends State<MuseumPieceUpdateScreen> {
                 description!,
                 image!,
                 rssi!,
-                color!,
+                color == null ? widget.museumPiece.color : color!.toHex(),
                 selectedBeacon!,
                 selectedTour!,
               );
